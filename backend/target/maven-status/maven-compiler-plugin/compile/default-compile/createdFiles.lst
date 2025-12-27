@@ -1,6 +1,5 @@
-com\ubereats\rms\domain\OrderStatus.class
-com\ubereats\rms\domain\OrderItem.class
-com\ubereats\rms\pipeline\FilterStep.class
-com\ubereats\rms\pipeline\PipelineStep.class
-com\ubereats\rms\domain\Category.class
-com\ubereats\rms\domain\Order.class
+com\restaurant\analytics\service\AnalyticsService.class
+com\restaurant\analytics\controller\AnalyticsController.class
+com\restaurant\analytics\repository\DataLoader.class
+com\restaurant\analytics\model\Order.class
+com\restaurant\analytics\RestaurantAnalyticsApplication.class

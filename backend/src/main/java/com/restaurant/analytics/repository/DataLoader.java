@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public class DataLoader {
-    private static final String CSV_PATH = "../dataset/restaurant_data.csv";
+    private static final String CSV_PATH = "R:/HND-23 CSD/4th SEMESTER/APDP/rms-analytics-system/rms-analytics-system/dataset/restaurant_dataset.csv";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private List<Order> orders;
 

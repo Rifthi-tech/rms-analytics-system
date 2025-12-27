@@ -2,7 +2,7 @@ import requests
 from typing import Dict, Any
 
 class APIService:
-    BASE_URL = "http://localhost:8080/api/analytics"
+    BASE_URL = "http://localhost:8081/api/api/analytics"
 
     @staticmethod
     def get_peak_dining() -> Dict[str, Any]:
@@ -10,9 +10,16 @@ class APIService:
             response = requests.get(f"{APIService.BASE_URL}/peak-dining", timeout=10)
             response.raise_for_status()
             return response.json()
+        except requests.exceptions.ConnectionError:
+            print(f"ERROR: Cannot connect to {APIService.BASE_URL}")
+            print("Make sure backend is running on http://localhost:8080")
+            return {"error": "Connection refused - Backend not running"}
+        except requests.exceptions.Timeout:
+            print("ERROR: Request timed out")
+            return {"error": "Request timeout"}
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching peak dining data: {e}")
-            return {}
+            print(f"ERROR: {str(e)}")
+            return {"error": str(e)}
 
     @staticmethod
     def get_customer_segment() -> Dict[str, Any]:
