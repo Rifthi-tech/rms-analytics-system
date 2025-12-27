@@ -6,7 +6,6 @@ server:
 spring:
   application:
     name: rms-analytics-system
-
   servlet:
     multipart:
       max-file-size: 500MB
@@ -14,10 +13,7 @@ spring:
 
 cors:
   allowed-origins: "http://localhost:5000"
-  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
-  allowed-headers: "*"
-  allow-credentials: true
 
-data:
-  chunk-size: 10000
-  dead-letter-path: ./data/dead_letter_queue/
+logging:
+  level:
+    com.ubereats.rms: DEBUG

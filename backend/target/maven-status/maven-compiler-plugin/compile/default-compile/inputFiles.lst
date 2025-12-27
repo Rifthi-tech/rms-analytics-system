@@ -8,6 +8,7 @@ R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backen
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\PeakDiningResult.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\pipeline\EnrichStep.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\AnalysisRequest.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\AnomalyDetectionResult.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\SegmentationResult.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\builder\AnalysisReport.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\RevenueResult.java
@@ -26,11 +27,14 @@ R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backen
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\RmsAnalyticsApplication.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\domain\Category.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\service\BranchPerformanceService.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\BranchPerformanceResult.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\SeasonalBehaviorResult.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\config\AppConfig.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\domain\MenuItem.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\service\RevenueAnalysisService.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\service\SeasonalBehaviorService.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\service\AnomalyDetectionService.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\dto\MenuAnalysisResult.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\service\CustomerSegmentationService.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\service\PeakDiningService.java
 R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\rms-analytics-system\backend\src\main\java\com\ubereats\rms\domain\OrderStatus.java
