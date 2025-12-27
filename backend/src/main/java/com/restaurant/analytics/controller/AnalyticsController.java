@@ -1,45 +1,55 @@
-package com.ubereats.rms.controller;
+package com.restaurant.analytics.controller;
 
-import com.ubereats.rms.dto.*;
-import com.ubereats.rms.service.*;
-import org.springframework.http.ResponseEntity;
+import com.restaurant.analytics.service.AnalyticsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/analytics")
+@RequestMapping("/api/analytics")
 @CrossOrigin(origins = "*")
 public class AnalyticsController {
 
-    private final PeakDiningService peakDiningService;
+    @Autowired
+    private AnalyticsService analyticsService;
 
-    public AnalyticsController(PeakDiningService peakDiningService) {
-        this.peakDiningService = peakDiningService;
+    @GetMapping("/peak-dining")
+    public Map<String, Object> getPeakDining() {
+        return analyticsService.getPeakDiningAnalysis();
     }
 
-    @PostMapping("/peak-dining")
-    public ResponseEntity<AnalysisResponse<PeakDiningResult>> analyzePeakDining(@RequestBody AnalysisRequest request) {
-        long startTime = System.currentTimeMillis();
+    @GetMapping("/customer-segment")
+    public Map<String, Object> getCustomerSegment() {
+        return analyticsService.getCustomerSegmentation();
+    }
 
-        PeakDiningResult result = peakDiningService.analyzePeakHours(
-                request.getStartDate(),
-                request.getEndDate(),
-                request.getOutletId()
-        );
+    @GetMapping("/seasonal")
+    public Map<String, Object> getSeasonal() {
+        return analyticsService.getSeasonalBehavior();
+    }
 
-        AnalysisResponse<PeakDiningResult> response = new AnalysisResponse<>();
-        response.setData(result);
-        response.setProcessingTime(System.currentTimeMillis() - startTime);
+    @GetMapping("/menu-items")
+    public Map<String, Object> getMenuItems() {
+        return analyticsService.getMenuItemAnalysis();
+    }
 
-        return ResponseEntity.ok(response);
+    @GetMapping("/revenue")
+    public Map<String, Object> getRevenue() {
+        return analyticsService.getRevenueAnalysis();
+    }
+
+    @GetMapping("/branch-performance")
+    public Map<String, Object> getBranchPerformance() {
+        return analyticsService.getBranchPerformance();
+    }
+
+    @GetMapping("/anomaly")
+    public Map<String, Object> getAnomalies() {
+        return analyticsService.getAnomalyDetection();
     }
 
     @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("RMS Analytics Service is running");
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> testEndpoint() {
-        return ResponseEntity.ok("{\"status\":\"success\",\"message\":\"API is working\"}");
+    public String health() {
+        return "OK";
     }
 }

@@ -1,0 +1,11 @@
+package com.restaurant.analytics;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class RestaurantAnalyticsApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(RestaurantAnalyticsApplication.class, args);
+    }
+}
