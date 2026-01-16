@@ -32,9 +32,10 @@ public class CSVDataLoader {
     /**
      * Load CSV in chunks and process with callback
      */
+    @SuppressWarnings("deprecation")
     public static void loadChunkedData(Path csvPath, ChunkProcessor processor) throws IOException {
         try (Reader reader = Files.newBufferedReader(csvPath, StandardCharsets.UTF_8);
-             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withSkipEmptyLines())) {
+             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
             List<CSVRecord> chunk = new ArrayList<>();
             long totalRecords = 0;

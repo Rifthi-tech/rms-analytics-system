@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * Requirement 4: Popular menu items and order flow analysis
  */
 public class MenuAnalysisService {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(MenuAnalysisService.class);
 
     /**

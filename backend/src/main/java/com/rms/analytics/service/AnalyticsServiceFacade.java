@@ -37,8 +37,6 @@ public class AnalyticsServiceFacade {
 
         this.orders = new ArrayList<>();
         this.customers = new ArrayList<>();
-        this.items = new ArrayList<>();
-        this.outlets = new ArrayList<>();
     }
 
     /**
@@ -48,8 +46,6 @@ public class AnalyticsServiceFacade {
                         List<OrderItem> items, List<Outlet> outlets) {
         this.orders = orders;
         this.customers = customers;
-        this.items = items;
-        this.outlets = outlets;
         logger.info("Data loaded: {} orders, {} customers, {} items, {} outlets",
                 orders.size(), customers.size(), items.size(), outlets.size());
     }
