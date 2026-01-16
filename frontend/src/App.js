@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
+import DashboardWithCharts from './components/DashboardWithCharts';
 import DataUpload from './components/DataUpload';
 import PeakDiningAnalysis from './components/analytics/PeakDiningAnalysis';
 import CustomerDemographics from './components/analytics/CustomerDemographics';
@@ -82,7 +83,7 @@ function App() {
         {!loading && (
           <>
             {currentPage === 'dashboard' && (
-              <Dashboard 
+              <DashboardWithCharts 
                 dataLoaded={dataLoaded} 
                 reportData={reportData}
                 onUploadClick={() => navigateTo('upload')}
