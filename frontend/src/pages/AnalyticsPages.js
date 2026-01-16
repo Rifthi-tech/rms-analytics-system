@@ -35,7 +35,7 @@ const COLORS = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#feca57'];
 
 export function Dashboard({ dataLoaded }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="gradient-primary text-white rounded-xl shadow-lg p-8 mb-12">
@@ -174,7 +174,7 @@ export function Dashboard({ dataLoaded }) {
 
 export function PeakDiningAnalysis() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-liner-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="gradient-primary text-white rounded-xl shadow-lg p-8 mb-12">
           <h1 className="text-4xl font-bold mb-2">🕐 Peak Dining Analysis</h1>
@@ -200,7 +200,7 @@ export function PeakDiningAnalysis() {
           <div className="metric-card">
             <h3 className="text-xl font-bold text-gray-900 mb-6">📊 Daily Summary</h3>
             <div className="space-y-4">
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+              <div className="p-4 bg-liner-to-br from-blue-50 to-blue-100 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-semibold text-gray-900">Breakfast (6-12 PM)</span>
                   <span className="text-blue-600 font-bold">165 orders</span>
@@ -210,7 +210,7 @@ export function PeakDiningAnalysis() {
                 </div>
               </div>
 
-              <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg">
+              <div className="p-4 bg-liner-to-br from-purple-50 to-purple-100 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-semibold text-gray-900">Lunch (12-3 PM)</span>
                   <span className="text-purple-600 font-bold">280 orders</span>
@@ -220,7 +220,7 @@ export function PeakDiningAnalysis() {
                 </div>
               </div>
 
-              <div className="p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-lg">
+              <div className="p-4 bg-liner-to-br from-pink-50 to-pink-100 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-semibold text-gray-900">Dinner (6-12 AM)</span>
                   <span className="text-pink-600 font-bold">540 orders</span>
@@ -230,7 +230,7 @@ export function PeakDiningAnalysis() {
                 </div>
               </div>
 
-              <div className="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg">
+              <div className="p-4 bg-liner-to-br from-yellow-50 to-yellow-100 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-semibold text-gray-900">Off-Hours (12-6 AM)</span>
                   <span className="text-yellow-600 font-bold">95 orders</span>
@@ -271,7 +271,7 @@ export function PeakDiningAnalysis() {
 
 export function RevenueAnalysis() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-liner-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="gradient-primary text-white rounded-xl shadow-lg p-8 mb-12">
           <h1 className="text-4xl font-bold mb-2">💰 Revenue Analysis</h1>
@@ -368,7 +368,7 @@ export function CustomerDemographics() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-liner-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="gradient-primary text-white rounded-xl shadow-lg p-8 mb-12">
           <h1 className="text-4xl font-bold mb-2">👥 Customer Demographics</h1>
@@ -454,7 +454,7 @@ export function BranchPerformance() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-liner-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="gradient-primary text-white rounded-xl shadow-lg p-8 mb-12">
           <h1 className="text-4xl font-bold mb-2">🏪 Branch Performance</h1>
@@ -498,7 +498,7 @@ export function BranchPerformance() {
                 <div className="pt-3 border-t border-gray-200">
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" 
+                      className="bg-liner-to-br from-purple-500 to-pink-500 h-2 rounded-full" 
                       style={{width: `${(branch.revenue / 52000) * 100}%`}}
                     ></div>
                   </div>
@@ -534,7 +534,7 @@ export function AnomalyDetection() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-liner-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="gradient-primary text-white rounded-xl shadow-lg p-8 mb-12">
           <h1 className="text-4xl font-bold mb-2">⚠️ Anomaly Detection</h1>
