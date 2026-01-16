@@ -26,8 +26,6 @@ public class AnalyticsServiceFacade {
 
     private List<Order> orders;
     private List<Customer> customers;
-    private List<OrderItem> items;
-    private List<Outlet> outlets;
 
     public AnalyticsServiceFacade() {
         this.peakDiningService = new PeakDiningAnalysisService();

@@ -34,7 +34,7 @@ public class CSVDataLoader {
      */
     public static void loadChunkedData(Path csvPath, ChunkProcessor processor) throws IOException {
         try (Reader reader = Files.newBufferedReader(csvPath, StandardCharsets.UTF_8);
-             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withSkipEmptyLines())) {
 
             List<CSVRecord> chunk = new ArrayList<>();
             long totalRecords = 0;

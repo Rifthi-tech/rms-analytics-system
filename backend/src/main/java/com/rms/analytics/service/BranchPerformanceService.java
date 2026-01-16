@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * Requirement 7: Branch performance evaluation and ranking
  */
 public class BranchPerformanceService {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(BranchPerformanceService.class);
 
     /**

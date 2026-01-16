@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,6 +13,7 @@ import java.util.stream.Collectors;
  * Requirement 5: Ticket counting and revenue analysis
  */
 public class RevenueAnalysisService {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(RevenueAnalysisService.class);
 
     /**

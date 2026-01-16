@@ -83,7 +83,6 @@ public class MenuAnalysisService {
      * Analyze orders by category
      */
     public Map<String, Integer> analyzeByCategory(List<Order> orders) {
-        Map<String, Integer> categories = new HashMap<>();
         // Categories would be extracted from order item data
         // For demo purposes, categorizing by outlet
         return orders.stream()

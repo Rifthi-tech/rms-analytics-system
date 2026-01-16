@@ -1,6 +1,5 @@
 package com.rms.analytics.service;
 
-import com.rms.analytics.model.Order;
 import com.rms.analytics.model.Customer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
  * Requirement 2: Analyze customer demographics and loyalty segmentation
  */
 public class CustomerDemographicsService {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CustomerDemographicsService.class);
 
     /**

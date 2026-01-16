@@ -4,8 +4,6 @@ import com.rms.analytics.model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,6 +12,7 @@ import java.util.stream.Collectors;
  * Requirement 1: Identify peak hours, days, and months
  */
 public class PeakDiningAnalysisService {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(PeakDiningAnalysisService.class);
 
     /**

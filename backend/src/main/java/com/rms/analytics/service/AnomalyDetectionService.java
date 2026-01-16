@@ -4,15 +4,14 @@ import com.rms.analytics.model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service for Anomaly Detection
  * Requirement 6: Service anomaly detection
  */
 public class AnomalyDetectionService {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(AnomalyDetectionService.class);
     private static final double ANOMALY_THRESHOLD = 0.5; // 50% deviation threshold
 
