@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block title %}{{ analysis_type.replace('-', ' ').title() }} - Uber Eats Restaurant{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-chart-line"></i> 
+        {{ analysis_type.replace('-', ' ').title() }} Analysis
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshAnalysis()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="exportData('csv')">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="exportData('pdf')">
+                <i class="fas fa-file-pdf"></i> Export PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Section -->
+<div class="filter-section">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="outletFilter" class="form-label">Branch/Outlet</label>
+            <select class="form-select" id="outletFilter" onchange="loadAnalysisData()">
+                <option value="">All Outlets</option>
+                {% for outlet in outlets %}
+                <option value="{{ outlet.outletId }}">{{ outlet.outletName }} ({{ outlet.borough }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="seasonFilter" class="form-label">Season</label>
+            <select class="form-select" id="seasonFilter" onchange="loadAnalysisData()">
+                <option value="">All Seasons</option>
+                <option value="spring">Spring</option>
+                <option value="summer">Summer</option>
+                <option value="autumn">Autumn</option>
+                <option value="winter">Winter</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="festivalFilter" class="form-label">Festival Period</label>
+            <select class="form-select" id="festivalFilter" onchange="loadAnalysisData()">
+                <option value="">All Periods</option>
+                <option value="christmas">Christmas</option>
+                <option value="new_year">New Year</option>
+                <option value="valentine">Valentine's Day</option>
+                <option value="easter">Easter</option>
+                <option value="diwali">Diwali</option>
+                <option value="vesak">Vesak</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">&nbsp;</label>
+            <div>
+                <button class="btn btn-primary" onclick="loadAnalysisData()">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<div id="loadingIndicator" class="text-center" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading analysis data...</p>
+</div>
+
+<!-- Error Display -->
+<div id="errorDisplay" class="alert alert-danger" style="display: none;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span id="errorMessage"></span>
+</div>
+
+<!-- Key Metrics Cards -->
+<div id="metricsCards" class="row mb-4" style="display: none;">
+    <!-- Metrics will be populated dynamically -->
+</div>
+
+<!-- Charts Section -->
+<div id="chartsSection" class="row">
+    <!-- Charts will be populated dynamically -->
+</div>
+
+<!-- Data Tables Section -->
+<div id="tablesSection" class="mt-4">
+    <!-- Tables will be populated dynamically -->
+</div>
+
+<script>
+const analysisType = '{{ analysis_type }}';
+
+// Load analysis data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadAnalysisData();
+});
+
+function loadAnalysisData() {
+    showLoading();
+    hideError();
+    
+    const params = new URLSearchParams();
+    
+    // Get filter values
+    const outletFilter = document.getElementById('outletFilter').value;
+    const seasonFilter = document.getElementById('seasonFilter').value;
+    const festivalFilter = document.getElementById('festivalFilter').value;
+    
+    if (outletFilter) params.append('outletId', outletFilter);
+    if (seasonFilter) params.append('season', seasonFilter);
+    if (festivalFilter) params.append('festival', festivalFilter);
+    
+    // Load data and charts simultaneously
+    Promise.all([
+        fetch(`/api/analytics/${analysisType}?${params.toString()}`).then(r => r.json()),
+        fetch(`/charts/${analysisType}?${params.toString()}`).then(r => r.json())
+    ])
+    .then(([data, charts]) => {
+        hideLoading();
+        displayAnalysisData(data);
+        displayCharts(charts);
+    })
+    .catch(error => {
+        hideLoading();
+        showError('Failed to load analysis data: ' + error.message);
+    });
+}
+
+function displayAnalysisData(data) {
+    // Display key metrics
+    displayMetrics(data);
+    
+    // Display data tables
+    displayTables(data);
+}
+
+function displayMetrics(data) {
+    const metricsContainer = document.getElementById('metricsCards');
+    let metricsHtml = '';
+    
+    if (analysisType === 'revenue-analysis' && data.revenueSummary) {
+        const summary = data.revenueSummary;
+        metricsHtml = `
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">LKR ${summary.totalRevenue.toLocaleString()}</div>
+                    <div class="metric-label">Total Revenue</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">${summary.totalOrders.toLocaleString()}</div>
+                    <div class="metric-label">Total Orders</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">LKR ${summary.averageOrderValue.toFixed(2)}</div>
+                    <div class="metric-label">Average Order Value</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">${summary.revenueGrowthRate ? summary.revenueGrowthRate.toFixed(1) + '%' : 'N/A'}</div>
+                    <div class="metric-label">Growth Rate</div>
+                </div>
+            </div>
+        `;
+    } else if (analysisType === 'peak-dining' && data.branchSummaries) {
+        const totalOrders = Object.values(data.branchSummaries).reduce((sum, branch) => sum + branch.totalOrders, 0);
+        const totalRevenue = Object.values(data.branchSummaries).reduce((sum, branch) => sum + branch.totalRevenue, 0);
+        const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+        const totalCustomers = Object.values(data.branchSummaries).reduce((sum, branch) => sum + branch.uniqueCustomers, 0);
+        
+        metricsHtml = `
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">${totalOrders.toLocaleString()}</div>
+                    <div class="metric-label">Total Orders</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">LKR ${totalRevenue.toLocaleString()}</div>
+                    <div class="metric-label">Total Revenue</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">LKR ${avgOrderValue.toFixed(2)}</div>
+                    <div class="metric-label">Avg Order Value</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">${totalCustomers.toLocaleString()}</div>
+                    <div class="metric-label">Unique Customers</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (metricsHtml) {
+        metricsContainer.innerHTML = metricsHtml;
+        metricsContainer.style.display = 'flex';
+    } else {
+        metricsContainer.style.display = 'none';
+    }
+}
+
+function displayCharts(charts) {
+    const chartsContainer = document.getElementById('chartsSection');
+    let chartsHtml = '';
+    
+    console.log('Received charts:', charts); // Debug log
+    
+    if (Object.keys(charts).length === 0) {
+        chartsContainer.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    No charts available for this analysis type yet.
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    Object.keys(charts).forEach(chartId => {
+        if (charts[chartId] && !charts[chartId].error) {
+            chartsHtml += `
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="${chartId}" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    });
+    
+    if (chartsHtml) {
+        chartsContainer.innerHTML = chartsHtml;
+        
+        // Render Plotly charts with delay to ensure DOM is ready
+        setTimeout(() => {
+            Object.keys(charts).forEach(chartId => {
+                if (charts[chartId] && !charts[chartId].error) {
+                    try {
+                        console.log('Rendering chart:', chartId); // Debug log
+                        const chartData = JSON.parse(charts[chartId]);
+                        Plotly.newPlot(chartId, chartData.data, chartData.layout, {responsive: true});
+                    } catch (e) {
+                        console.error('Error rendering chart:', chartId, e);
+                        document.getElementById(chartId).innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Error rendering chart: ${e.message}
+                            </div>
+                        `;
+                    }
+                }
+            });
+        }, 100);
+    } else {
+        chartsContainer.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Charts are being generated. Please wait...
+                </div>
+            </div>
+        `;
+    }
+}
+
+function displayTables(data) {
+    const tablesContainer = document.getElementById('tablesSection');
+    let tablesHtml = '';
+    
+    if (analysisType === 'peak-dining' && data.peakHourTables && data.peakHourTables.overallPeakHours) {
+        tablesHtml += `
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-clock"></i> Peak Hours Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Hour</th>
+                                    <th>Time Range</th>
+                                    <th>Order Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.peakHourTables.overallPeakHours.map((hour, index) => `
+                                    <tr>
+                                        <td><span class="badge bg-primary">${index + 1}</span></td>
+                                        <td>${hour.hour}:00</td>
+                                        <td>${hour.timeRange}</td>
+                                        <td><strong>${hour.orderCount}</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (analysisType === 'menu-analysis' && data.popularItems) {
+        tablesHtml += `
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-utensils"></i> Popular Menu Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                    <th>Order Count</th>
+                                    <th>Revenue</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.popularItems.slice(0, 10).map((item, index) => `
+                                    <tr>
+                                        <td><span class="badge bg-success">${index + 1}</span></td>
+                                        <td><strong>${item.itemName}</strong></td>
+                                        <td><span class="badge bg-secondary">${item.category}</span></td>
+                                        <td>${item.orderCount}</td>
+                                        <td>LKR ${item.totalRevenue.toLocaleString()}</td>
+                                        <td>LKR ${item.price}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (analysisType === 'branch-performance' && data.branchRankings) {
+        tablesHtml += `
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-building"></i> Branch Performance Rankings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Branch Name</th>
+                                    <th>Revenue</th>
+                                    <th>Orders</th>
+                                    <th>Avg Order Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.branchRankings.map((branch, index) => `
+                                    <tr>
+                                        <td><span class="badge bg-warning">${index + 1}</span></td>
+                                        <td><strong>${branch.branchName}</strong></td>
+                                        <td>LKR ${branch.revenue.toLocaleString()}</td>
+                                        <td>${branch.orderCount}</td>
+                                        <td>LKR ${branch.averageOrderValue.toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (analysisType === 'anomaly-detection' && data.alertLogs) {
+        tablesHtml += `
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Recent Alerts</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Alert ID</th>
+                                    <th>Type</th>
+                                    <th>Severity</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.alertLogs.map(alert => `
+                                    <tr>
+                                        <td><code>${alert.alertId}</code></td>
+                                        <td><span class="badge bg-info">${alert.type}</span></td>
+                                        <td><span class="badge bg-${alert.severity === 'HIGH' ? 'danger' : alert.severity === 'MEDIUM' ? 'warning' : 'success'}">${alert.severity}</span></td>
+                                        <td>${alert.message}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    tablesContainer.innerHTML = tablesHtml;
+}
+
+function showLoading() {
+    document.getElementById('loadingIndicator').style.display = 'block';
+    document.getElementById('chartsSection').style.display = 'none';
+    document.getElementById('metricsCards').style.display = 'none';
+}
+
+function hideLoading() {
+    document.getElementById('loadingIndicator').style.display = 'none';
+    document.getElementById('chartsSection').style.display = 'flex';
+}
+
+function showError(message) {
+    document.getElementById('errorMessage').textContent = message;
+    document.getElementById('errorDisplay').style.display = 'block';
+}
+
+function hideError() {
+    document.getElementById('errorDisplay').style.display = 'none';
+}
+
+function refreshAnalysis() {
+    loadAnalysisData();
+}
+
+function exportData(format) {
+    const params = new URLSearchParams();
+    
+    const outletFilter = document.getElementById('outletFilter').value;
+    const seasonFilter = document.getElementById('seasonFilter').value;
+    const festivalFilter = document.getElementById('festivalFilter').value;
+    
+    if (outletFilter) params.append('outletId', outletFilter);
+    if (seasonFilter) params.append('season', seasonFilter);
+    if (festivalFilter) params.append('festival', festivalFilter);
+    
+    const url = `/reports/export/${format}/${analysisType}?${params.toString()}`;
+    
+    // Create temporary link and trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${analysisType}_report.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %}

@@ -1,83 +1,73 @@
 @echo off
-REM RMS Analytics System - Windows Setup Script
+echo Setting up Restaurant Analytics System...
 
 echo.
-echo ============================================
-echo  RMS Analytics System - Setup & Launch
-echo ============================================
-echo.
+echo Checking prerequisites...
 
-REM Check Java
+echo Checking Java...
 java -version >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: Java not found. Please install Java 11+
+if %errorlevel% neq 0 (
+    echo ERROR: Java is not installed or not in PATH
+    echo Please install Java 17 or higher from: https://adoptium.net/
+    echo.
     pause
     exit /b 1
 )
 
-REM Check Maven
+echo Checking Maven...
 mvn -version >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: Maven not found. Please install Maven
+if %errorlevel% neq 0 (
+    echo ERROR: Maven is not installed or not in PATH
+    echo Please install Maven from: https://maven.apache.org/download.cgi
+    echo.
     pause
     exit /b 1
 )
 
-REM Check Node
-node -v >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: Node.js not found. Please install Node.js 14+
+echo Checking Python...
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERROR: Python is not installed or not in PATH
+    echo Please install Python 3.8+ from: https://www.python.org/downloads/
+    echo.
     pause
     exit /b 1
 )
-
-echo ✓ All prerequisites found
-echo.
-
-REM Build Backend
-echo [1/4] Building Backend...
-cd backend
-call mvn clean install -q
-if errorlevel 1 (
-    echo ERROR: Backend build failed
-    pause
-    exit /b 1
-)
-cd ..
-echo ✓ Backend built successfully
 
 echo.
-echo [2/4] Installing Frontend Dependencies...
+echo All prerequisites found!
+echo.
+echo Installing Python dependencies...
 cd frontend
-call npm install -q
-if errorlevel 1 (
-    echo ERROR: Frontend installation failed
+pip install -r requirements.txt
+if %errorlevel% neq 0 (
+    echo ERROR: Failed to install Python dependencies
+    echo Please check your Python and pip installation
     pause
     exit /b 1
 )
 cd ..
-echo ✓ Frontend dependencies installed
 
 echo.
-echo [3/4] Starting Backend Server...
-start "RMS Backend" cmd /k "cd backend && mvn spring-boot:run"
-echo ✓ Backend starting on http://localhost:8080
+echo Compiling Java backend...
+cd backend
+mvn compile
+if %errorlevel% neq 0 (
+    echo ERROR: Failed to compile Java backend
+    echo Please check the error messages above
+    pause
+    exit /b 1
+)
+cd ..
 
 echo.
-timeout /t 5 /nobreak
-echo [4/4] Starting Frontend Server...
-start "RMS Frontend" cmd /k "cd frontend && npm start"
-echo ✓ Frontend starting on http://localhost:3000
-
+echo Setup completed successfully!
 echo.
-echo ============================================
-echo  ✓ Setup Complete!
-echo ============================================
+echo To start the system:
+echo 1. Run start-backend.bat (wait for it to fully start)
+echo 2. Run start-frontend.bat
+echo 3. Open http://localhost:5000 in your browser
 echo.
-echo Frontend:  http://localhost:3000
-echo Backend:   http://localhost:8080
-echo.
-echo To load data, use file path:
-echo r:\HND-23 CSD\4th SEMESTER\APDP\restaurant_dataset.csv
+echo Or run run-system.bat to start both services automatically
 echo.
 pause

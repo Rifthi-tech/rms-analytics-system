@@ -1,0 +1,11 @@
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\api\AnalyticsController.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\ingestion\DataIngestionService.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\analytics\AnomalyDetectionService.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\transform\DataTransformationService.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\analytics\CustomerAnalytics.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\RestaurantAnalyticsApplication.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\model\RestaurantOrder.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\analytics\BranchPerformanceAnalytics.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\analytics\MenuAnalytics.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\analytics\PeakDiningAnalytics.java
+R:\HND-23 CSD\4th SEMESTER\APDP\rms-analytics-system\backend\src\main\java\com\restaurant\analytics\analytics\RevenueAnalytics.java

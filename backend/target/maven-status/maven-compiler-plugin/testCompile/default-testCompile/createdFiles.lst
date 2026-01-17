@@ -1,0 +1,8 @@
+com\restaurant\PerformanceTests.class
+com\restaurant\integration\AnalyticsIntegrationTest.class
+com\restaurant\SystemTests.class
+com\restaurant\UnitTests.class
+com\restaurant\service\AnalyticsServiceTest.class
+com\restaurant\IntegrationTests.class
+com\restaurant\RegressionTests.class
+com\restaurant\controller\AnalyticsControllerTest.class

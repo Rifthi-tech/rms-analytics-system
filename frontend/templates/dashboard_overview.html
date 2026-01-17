@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Overview - Uber Eats Restaurant{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-tachometer-alt"></i> Analytics Overview Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshAllData()">
+                <i class="fas fa-sync-alt"></i> Refresh All
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="totalOrders">-</div>
+            <div class="metric-label">Total Orders</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="totalRevenue">-</div>
+            <div class="metric-label">Total Revenue</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="avgOrderValue">-</div>
+            <div class="metric-label">Avg Order Value</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value">{{ outlets|length }}</div>
+            <div class="metric-label">Active Outlets</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="row">
+    <!-- Peak Dining Charts -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-clock"></i> Peak Dining Patterns</h5>
+                <a href="/analysis/peak-dining" class="btn btn-sm btn-outline-primary">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="peakDiningChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Customer Demographics -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-users"></i> Customer Demographics</h5>
+                <a href="/analysis/customer-demographics" class="btn btn-sm btn-outline-success">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="customerDemographicsChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Trends -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-dollar-sign"></i> Revenue Trends</h5>
+                <a href="/analysis/revenue-analysis" class="btn btn-sm btn-outline-info">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="revenueChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popular Menu Items -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-utensils"></i> Popular Menu Items</h5>
+                <a href="/analysis/menu-analysis" class="btn btn-sm btn-outline-warning">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="menuChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Branch Performance Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-building"></i> Branch Performance Summary</h5>
+                <a href="/analysis/branch-performance" class="btn btn-sm btn-outline-dark">View Details</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="branchPerformanceTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Branch Name</th>
+                                <th>Revenue</th>
+                                <th>Orders</th>
+                                <th>Avg Order Value</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Alerts -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-exclamation-triangle"></i> Recent Alerts</h5>
+                <a href="/analysis/anomaly-detection" class="btn btn-sm btn-outline-danger">View All Alerts</a>
+            </div>
+            <div class="card-body">
+                <div id="alertsContainer">
+                    <!-- Alerts will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadOverviewData();
+});
+
+function loadOverviewData() {
+    // Load all analytics data
+    Promise.all([
+        fetch('/api/analytics/peak-dining').then(r => r.json()),
+        fetch('/api/analytics/customer-demographics').then(r => r.json()),
+        fetch('/api/analytics/revenue-analysis').then(r => r.json()),
+        fetch('/api/analytics/menu-analysis').then(r => r.json()),
+        fetch('/api/analytics/branch-performance').then(r => r.json()),
+        fetch('/api/analytics/anomaly-detection').then(r => r.json())
+    ])
+    .then(([peakData, customerData, revenueData, menuData, branchData, anomalyData]) => {
+        updateMetrics(revenueData);
+        createOverviewCharts(peakData, customerData, revenueData, menuData);
+        updateBranchTable(branchData);
+        updateAlerts(anomalyData);
+    })
+    .catch(error => {
+        console.error('Error loading overview data:', error);
+    });
+}
+
+function updateMetrics(revenueData) {
+    if (revenueData.revenueSummary) {
+        const summary = revenueData.revenueSummary;
+        document.getElementById('totalOrders').textContent = summary.totalOrders.toLocaleString();
+        document.getElementById('totalRevenue').textContent = 'LKR ' + summary.totalRevenue.toLocaleString();
+        document.getElementById('avgOrderValue').textContent = 'LKR ' + summary.averageOrderValue.toFixed(2);
+    }
+}
+
+function createOverviewCharts(peakData, customerData, revenueData, menuData) {
+    // Peak Dining Chart
+    if (peakData.dailyPatterns) {
+        const days = Object.keys(peakData.dailyPatterns);
+        const counts = Object.values(peakData.dailyPatterns);
+        
+        const peakChart = {
+            data: [{
+                x: days,
+                y: counts,
+                type: 'bar',
+                marker: { color: '#007bff' }
+            }],
+            layout: {
+                title: 'Orders by Day of Week',
+                xaxis: { title: 'Day' },
+                yaxis: { title: 'Order Count' },
+                margin: { t: 40, b: 40, l: 50, r: 20 }
+            }
+        };
+        
+        Plotly.newPlot('peakDiningChart', peakChart.data, peakChart.layout, {responsive: true});
+    }
+    
+    // Customer Demographics Chart
+    if (customerData.ageDistribution) {
+        const labels = Object.keys(customerData.ageDistribution);
+        const values = Object.values(customerData.ageDistribution);
+        
+        const customerChart = {
+            data: [{
+                labels: labels,
+                values: values,
+                type: 'pie',
+                hole: 0.4
+            }],
+            layout: {
+                title: 'Customer Age Distribution',
+                margin: { t: 40, b: 40, l: 20, r: 20 }
+            }
+        };
+        
+        Plotly.newPlot('customerDemographicsChart', customerChart.data, customerChart.layout, {responsive: true});
+    }
+    
+    // Revenue Chart
+    if (revenueData.dailyRevenue) {
+        const dates = Object.keys(revenueData.dailyRevenue);
+        const revenues = Object.values(revenueData.dailyRevenue);
+        
+        const revenueChart = {
+            data: [{
+                x: dates,
+                y: revenues,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#28a745' }
+            }],
+            layout: {
+                title: 'Daily Revenue Trend',
+                xaxis: { title: 'Date' },
+                yaxis: { title: 'Revenue (LKR)' },
+                margin: { t: 40, b: 40, l: 60, r: 20 }
+            }
+        };
+        
+        Plotly.newPlot('revenueChart', revenueChart.data, revenueChart.layout, {responsive: true});
+    }
+    
+    // Menu Chart
+    if (menuData.popularItems) {
+        const items = menuData.popularItems.slice(0, 5);
+        const itemNames = items.map(item => item.itemName);
+        const orderCounts = items.map(item => item.orderCount);
+        
+        const menuChart = {
+            data: [{
+                x: orderCounts,
+                y: itemNames,
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#ffc107' }
+            }],
+            layout: {
+                title: 'Top 5 Popular Items',
+                xaxis: { title: 'Order Count' },
+                margin: { t: 40, b: 40, l: 120, r: 20 }
+            }
+        };
+        
+        Plotly.newPlot('menuChart', menuChart.data, menuChart.layout, {responsive: true});
+    }
+}
+
+function updateBranchTable(branchData) {
+    if (branchData.branchRankings) {
+        const tbody = document.querySelector('#branchPerformanceTable tbody');
+        tbody.innerHTML = branchData.branchRankings.map((branch, index) => `
+            <tr>
+                <td><span class="badge bg-primary">${index + 1}</span></td>
+                <td><strong>${branch.branchName}</strong></td>
+                <td>LKR ${branch.revenue.toLocaleString()}</td>
+                <td>${branch.orderCount}</td>
+                <td>LKR ${branch.averageOrderValue.toFixed(2)}</td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar" role="progressbar" style="width: ${Math.min(100, (branch.revenue / 1200000) * 100)}%">
+                            ${((branch.revenue / 1200000) * 100).toFixed(1)}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+function updateAlerts(anomalyData) {
+    const alertsContainer = document.getElementById('alertsContainer');
+    
+    if (anomalyData.alertLogs && anomalyData.alertLogs.length > 0) {
+        alertsContainer.innerHTML = anomalyData.alertLogs.slice(0, 3).map(alert => `
+            <div class="alert alert-${alert.severity === 'HIGH' ? 'danger' : alert.severity === 'MEDIUM' ? 'warning' : 'info'} alert-dismissible">
+                <strong>${alert.type}:</strong> ${alert.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `).join('');
+    } else {
+        alertsContainer.innerHTML = '<div class="alert alert-success">No recent alerts. All systems operating normally.</div>';
+    }
+}
+
+function refreshAllData() {
+    loadOverviewData();
+}
+</script>
+{% endblock %}
