@@ -1,26 +1,85 @@
-# Uber Eats Restaurant Analytics
+# Uber Eats Restaurant Analytics System
+
+A comprehensive restaurant analytics platform built with Java Spring Boot backend and Python Flask frontend, featuring advanced data processing, interactive visualizations, and detailed reporting capabilities.
 
 ## 🚀 Quick Start Options
 
 ### Option 1: Immediate Demo (Python-only with Mock Data)
+Perfect for quickly exploring the interface with sample data:
 ```bash
 setup-python-only.bat
 start-frontend-only.bat
 ```
 Then open http://localhost:5000
 
-### Option 2: Full System (Requires Java + Maven)
+### Option 2: Full System (Complete Analytics Platform)
+For full functionality with real data processing:
 ```bash
 setup.bat
 run-system.bat
 ```
 Then open http://localhost:5000
 
-## 📋 Prerequisites for Full System
+## 📋 Prerequisites & Installation
 
-- **Java 17+**: Download from [Adoptium](https://adoptium.net/)
-- **Maven 3.6+**: Download from [Apache Maven](https://maven.apache.org/download.cgi)
-- **Python 3.8+**: Download from [Python.org](https://www.python.org/downloads/)
+### System Requirements
+- **Operating System**: Windows 10/11
+- **RAM**: Minimum 4GB, Recommended 8GB+
+- **Storage**: 2GB free space
+- **Ports**: 8080 (backend), 5000 (frontend)
+
+### Required Software
+
+#### 1. Java 17 or Higher
+- **Download**: https://adoptium.net/
+- **Installation**: 
+  - Download the Windows x64 MSI installer
+  - Run installer and ensure "Add to PATH" is checked
+- **Verify**: `java -version`
+
+#### 2. Apache Maven 3.6+
+- **Download**: https://maven.apache.org/download.cgi
+- **Installation**:
+  - Download Binary zip archive (apache-maven-3.x.x-bin.zip)
+  - Extract to `C:\Program Files\Apache\maven`
+  - Add `C:\Program Files\Apache\maven\bin` to system PATH
+- **Verify**: `mvn -version`
+
+#### 3. Python 3.8+
+- **Download**: https://www.python.org/downloads/
+- **Installation**:
+  - Download Windows installer
+  - **IMPORTANT**: Check "Add Python to PATH" during installation
+- **Verify**: `python --version`
+
+### Manual Setup (Alternative)
+If automated scripts don't work:
+
+1. **Install Python Dependencies**
+   ```bash
+   cd frontend
+   pip install -r requirements.txt
+   cd ..
+   ```
+
+2. **Compile Java Backend**
+   ```bash
+   cd backend
+   mvn compile
+   cd ..
+   ```
+
+3. **Start Backend** (in one terminal)
+   ```bash
+   cd backend
+   mvn spring-boot:run
+   ```
+
+4. **Start Frontend** (in another terminal)
+   ```bash
+   cd frontend
+   python app.py
+   ```
 
 ## 🏗️ System Architecture
 
@@ -116,8 +175,8 @@ See [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) for detailed setup instructio
 
 ## 📁 Project Structure
 ```
-restaurant-analytics/
-├── backend/                    # Java Spring Boot
+uber-eats-restaurant-analytics/
+├── backend/                    # Java Spring Boot Backend
 │   ├── src/main/java/com/restaurant/analytics/
 │   │   ├── ingestion/         # Data ingestion module
 │   │   ├── transform/         # Data transformation
@@ -126,21 +185,43 @@ restaurant-analytics/
 │   │   └── model/            # Data models
 │   ├── pom.xml               # Maven configuration
 │   └── restaurant_dataset_combined.csv
-├── frontend/                   # Python Flask
+├── frontend/                   # Python Flask Frontend
 │   ├── app.py                 # Main Flask application
-│   ├── app-mock.py           # Mock data version
+│   ├── app-mock.py           # Mock data version (for demo)
 │   ├── routes/
 │   │   ├── dashboard.py       # Dashboard routes
 │   │   ├── reports.py         # Report generation
 │   │   └── charts.py          # Chart endpoints
-│   ├── templates/             # HTML templates
-│   └── requirements.txt
-├── setup.bat                  # Full system setup
-├── setup-python-only.bat     # Python-only setup
+│   ├── templates/             # HTML templates (minimal design)
+│   │   ├── base.html         # Base template with right sidebar
+│   │   ├── index.html        # Dashboard with blue/gray theme
+│   │   ├── analysis.html     # Analytics modules
+│   │   ├── reports.html      # Report generation
+│   │   └── dashboard_overview.html
+│   └── requirements.txt       # Python dependencies
+├── setup.bat                  # Full system setup script
+├── setup-python-only.bat     # Python-only setup script
 ├── run-system.bat            # Start full system
-├── start-frontend-only.bat   # Start frontend only
-└── INSTALLATION_GUIDE.md     # Detailed installation guide
+├── start-backend.bat         # Start backend only
+├── start-frontend.bat        # Start frontend (requires backend)
+├── start-frontend-only.bat   # Start frontend with mock data
+├── restaurant_dataset_combined.csv  # Sample dataset
+└── README.md                 # This comprehensive guide
 ```
+
+## 🎨 Design Features
+
+### Modern Minimal Interface
+- **Color Scheme**: Simple blue (#4a90e2), light gray (#6c757d), and white
+- **Layout**: Clean design with right-positioned sidebar
+- **Navigation**: Intuitive menu structure for easy access
+- **Responsive**: Works on desktop, tablet, and mobile devices
+
+### Interactive Dashboard
+- **Real-time Analytics**: Live data analysis and visualization
+- **Filtering System**: Multi-dimensional filtering (outlet, season, festival)
+- **Interactive Charts**: Plotly-powered visualizations with minimal color palette
+- **Export Options**: CSV and PDF report generation
 
 ## 🌐 API Endpoints
 
@@ -167,31 +248,80 @@ restaurant-analytics/
 
 ### Common Issues
 
-1. **Java/Maven not found**: Install prerequisites from links above
-2. **Port conflicts**: Ensure ports 8080 and 5000 are available
-3. **Python dependencies**: Run `pip install -r frontend/requirements.txt`
-4. **Data loading**: Ensure CSV file is in backend directory
+#### "Java is not recognized"
+- **Problem**: Java not installed or not in PATH
+- **Solution**: Install Java 17+ from https://adoptium.net/ and ensure PATH is set
 
-### System Requirements
-- **OS**: Windows 10/11
-- **RAM**: 4GB minimum, 8GB+ recommended
-- **Storage**: 2GB free space
-- **Ports**: 8080 (backend), 5000 (frontend)
+#### "mvn is not recognized"
+- **Problem**: Maven not installed or not in PATH
+- **Solution**: Install Maven and add to PATH (see installation guide above)
+
+#### "python is not recognized"
+- **Problem**: Python not installed or not in PATH
+- **Solution**: Install Python and check "Add to PATH", or use `py` command
+
+#### Backend won't start
+- Check Java version: `java -version` (should be 17+)
+- Check Maven: `mvn -version`
+- Ensure port 8080 is available
+- Review console error messages
+
+#### Frontend connection errors
+- Ensure backend is running first at http://localhost:8080
+- Verify Python dependencies are installed
+- Check port 5000 is available
+
+#### Data loading issues
+- Ensure `restaurant_dataset_combined.csv` is in backend directory
+- Check file permissions
+- Review backend console for error messages
+
+### Feature Comparison
+
+#### Full Installation Features
+- ✅ All 7 analytics modules
+- ✅ Real-time data processing
+- ✅ Interactive charts and visualizations
+- ✅ CSV/PDF export functionality
+- ✅ Advanced filtering (season, festival, outlet)
+- ✅ Anomaly detection
+- ✅ Large file processing (5GB+)
+
+#### Python-only (Mock Data) Features
+- ✅ User interface demonstration
+- ✅ Basic chart examples
+- ❌ Real data processing
+- ❌ Export functionality
+- ❌ Advanced analytics
 
 ## 🔮 Future Enhancements
 
-- Real-time data streaming
-- Machine learning predictions
-- Advanced forecasting models
-- Multi-tenant support
-- Role-based access control
-- Mobile application
+- Real-time data streaming integration
+- Machine learning prediction models
+- Advanced forecasting capabilities
+- Multi-tenant restaurant support
+- Role-based access control system
+- Mobile application development
 - Advanced dashboard customization
+- API rate limiting and security enhancements
 
-## 📄 License
+## 📄 License & Usage
 
-This project is designed for educational and commercial use in restaurant analytics.
+This Uber Eats Restaurant Analytics System is designed for educational and commercial use in restaurant analytics and business intelligence applications.
+
+## 🏗️ System Architecture
+
+```
+CSV Data → Java Backend (Spring Boot) → REST APIs → Python Frontend (Flask) → Web Dashboard
+```
+
+The system follows a modular architecture with clear separation of concerns:
+- **Data Layer**: CSV file processing and storage
+- **Processing Layer**: Java Spring Boot for heavy analytics computations
+- **API Layer**: RESTful services for data exchange
+- **Presentation Layer**: Python Flask web application with minimal design
+- **User Interface**: Clean, responsive web dashboard with blue/gray color scheme
 
 ---
 
-**Note**: The system includes both a full-featured version (requires Java/Maven) and a demo version (Python-only with mock data) to accommodate different setup requirements.
+**Note**: This system includes both a full-featured version (requires Java/Maven) and a demo version (Python-only with mock data) to accommodate different setup and demonstration requirements.
