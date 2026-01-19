@@ -89,6 +89,38 @@ def branch_performance_charts():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@charts_bp.route('/seasonal-behavior')
+def seasonal_behavior_charts():
+    """Generate charts for seasonal behavior analysis"""
+    try:
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
+        
+        data = data_processor.get_seasonal_behavior(outlet_id, season, festival)
+        charts = create_seasonal_behavior_charts(data)
+        
+        return jsonify(charts)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@charts_bp.route('/anomaly-detection')
+def anomaly_detection_charts():
+    """Generate charts for anomaly detection"""
+    try:
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
+        
+        data = data_processor.get_anomaly_detection(outlet_id, season, festival)
+        charts = create_anomaly_detection_charts(data)
+        
+        return jsonify(charts)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def create_peak_dining_charts(data):
     """Create charts for peak dining analysis"""
     charts = {}
@@ -434,5 +466,191 @@ def create_branch_performance_charts(data):
         
     except Exception as e:
         print(f"Error creating branch performance charts: {e}")
+    
+    return charts
+
+def create_seasonal_behavior_charts(data):
+    """Create charts for seasonal behavior analysis"""
+    charts = {}
+    
+    try:
+        # Monthly trends chart
+        if 'monthlyOrders' in data and 'order_id' in data['monthlyOrders']:
+            monthly_data = data['monthlyOrders']['order_id']
+            months = list(monthly_data.keys())
+            counts = list(monthly_data.values())
+            
+            if months and counts:
+                monthly_chart = go.Figure(data=go.Bar(
+                    x=months,
+                    y=counts,
+                    marker_color='#4a90e2'
+                ))
+                monthly_chart.update_layout(
+                    title='Monthly Order Trends',
+                    xaxis_title='Month',
+                    yaxis_title='Order Count',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white',
+                    font={'color': '#6c757d'}
+                )
+                charts['monthly_trends'] = json.dumps(monthly_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Monthly revenue chart
+        if 'monthlyOrders' in data and 'revenue' in data['monthlyOrders']:
+            revenue_data = data['monthlyOrders']['revenue']
+            months = list(revenue_data.keys())
+            revenues = list(revenue_data.values())
+            
+            if months and revenues:
+                revenue_chart = go.Figure(data=go.Scatter(
+                    x=months,
+                    y=revenues,
+                    mode='lines+markers',
+                    line=dict(color='#4a90e2', width=3),
+                    marker=dict(color='#6c757d', size=8)
+                ))
+                revenue_chart.update_layout(
+                    title='Monthly Revenue Trends',
+                    xaxis_title='Month',
+                    yaxis_title='Revenue (LKR)',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white',
+                    font={'color': '#6c757d'}
+                )
+                charts['monthly_revenue'] = json.dumps(revenue_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Seasonal retention chart
+        if 'seasonalRetention' in data and data['seasonalRetention']:
+            retention_data = data['seasonalRetention']
+            groups = list(retention_data.keys())
+            counts = list(retention_data.values())
+            
+            if groups and counts:
+                retention_chart = go.Figure(data=go.Pie(
+                    labels=groups,
+                    values=counts,
+                    marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6']
+                ))
+                retention_chart.update_layout(
+                    title='Customer Retention by Loyalty Group',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white',
+                    font={'color': '#6c757d'}
+                )
+                charts['seasonal_retention'] = json.dumps(retention_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Seasonal orders chart
+        if 'seasonalOrders' in data and data['seasonalOrders']:
+            seasonal_data = data['seasonalOrders']
+            seasons = list(seasonal_data.keys())
+            counts = list(seasonal_data.values())
+            
+            if seasons and counts:
+                seasonal_chart = go.Figure(data=go.Bar(
+                    x=seasons,
+                    y=counts,
+                    marker_color='#6c757d'
+                ))
+                seasonal_chart.update_layout(
+                    title='Orders by Season',
+                    xaxis_title='Season',
+                    yaxis_title='Order Count',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white',
+                    font={'color': '#6c757d'}
+                )
+                charts['seasonal_orders'] = json.dumps(seasonal_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Seasonal revenue chart
+        if 'seasonalRevenue' in data and data['seasonalRevenue']:
+            seasonal_revenue = data['seasonalRevenue']
+            seasons = list(seasonal_revenue.keys())
+            revenues = list(seasonal_revenue.values())
+            
+            if seasons and revenues:
+                seasonal_revenue_chart = go.Figure(data=go.Pie(
+                    labels=seasons,
+                    values=revenues,
+                    hole=0.3,
+                    marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6']
+                ))
+                seasonal_revenue_chart.update_layout(
+                    title='Revenue Distribution by Season',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white',
+                    font={'color': '#6c757d'}
+                )
+                charts['seasonal_revenue'] = json.dumps(seasonal_revenue_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+    except Exception as e:
+        print(f"Error creating seasonal behavior charts: {e}")
+    
+    return charts
+
+def create_anomaly_detection_charts(data):
+    """Create charts for anomaly detection"""
+    charts = {}
+    
+    try:
+        # Alert severity distribution
+        if 'alertLogs' in data and data['alertLogs']:
+            alerts = data['alertLogs']
+            severity_counts = {}
+            for alert in alerts:
+                severity = alert.get('severity', 'UNKNOWN')
+                severity_counts[severity] = severity_counts.get(severity, 0) + 1
+            
+            if severity_counts:
+                severities = list(severity_counts.keys())
+                counts = list(severity_counts.values())
+                
+                severity_chart = go.Figure(data=go.Pie(
+                    labels=severities,
+                    values=counts,
+                    marker_colors=['#dc3545', '#6c757d', '#4a90e2']
+                ))
+                severity_chart.update_layout(
+                    title='Alert Distribution by Severity',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white'
+                )
+                charts['alert_severity'] = json.dumps(severity_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Alert types chart
+        if 'alertLogs' in data and data['alertLogs']:
+            alerts = data['alertLogs']
+            type_counts = {}
+            for alert in alerts:
+                alert_type = alert.get('type', 'Unknown')
+                type_counts[alert_type] = type_counts.get(alert_type, 0) + 1
+            
+            if type_counts:
+                types = list(type_counts.keys())
+                counts = list(type_counts.values())
+                
+                type_chart = go.Figure(data=go.Bar(
+                    x=types,
+                    y=counts,
+                    marker_color='#6c757d'
+                ))
+                type_chart.update_layout(
+                    title='Alert Distribution by Type',
+                    xaxis_title='Alert Type',
+                    yaxis_title='Count',
+                    height=400,
+                    plot_bgcolor='white',
+                    paper_bgcolor='white'
+                )
+                charts['alert_types'] = json.dumps(type_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+    except Exception as e:
+        print(f"Error creating anomaly detection charts: {e}")
     
     return charts

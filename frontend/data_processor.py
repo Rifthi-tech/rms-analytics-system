@@ -93,19 +93,24 @@ class RestaurantDataProcessor:
             return {'error': 'No data available for selected filters'}
         
         # Get unique customers
-        customers = df_filtered.drop_duplicates('customer_id')
+        customers = df_filtered.drop_duplicates('customer_id').copy()
         
         # Age distribution
         age_bins = [0, 25, 35, 45, 55, 100]
         age_labels = ['18-25', '26-35', '36-45', '46-55', '55+']
-        customers['age_group'] = pd.cut(customers['age'], bins=age_bins, labels=age_labels, right=False)
+        customers.loc[:, 'age_group'] = pd.cut(customers['age'], bins=age_bins, labels=age_labels, right=False)
         age_distribution = customers['age_group'].value_counts().to_dict()
+        
+        # Convert keys to strings to avoid JSON serialization issues
+        age_distribution = {str(k): int(v) for k, v in age_distribution.items() if pd.notna(k)}
         
         # Gender distribution
         gender_distribution = customers['gender'].value_counts().to_dict()
+        gender_distribution = {str(k): int(v) for k, v in gender_distribution.items()}
         
         # Loyalty distribution
         loyalty_distribution = customers['loyalty_group'].value_counts().to_dict()
+        loyalty_distribution = {str(k): int(v) for k, v in loyalty_distribution.items()}
         
         return {
             'ageDistribution': age_distribution,
@@ -121,19 +126,61 @@ class RestaurantDataProcessor:
         if df_filtered.empty:
             return {'error': 'No data available for selected filters'}
         
-        # Monthly trends
-        monthly_orders = df_filtered.groupby('month').agg({
-            'order_id': 'count',
-            'total_price_lkr': 'sum'
-        }).to_dict()
-        
-        # Seasonal retention (simplified)
-        seasonal_retention = df_filtered.groupby('loyalty_group')['customer_id'].nunique().to_dict()
-        
-        return {
-            'monthlyOrders': monthly_orders,
-            'seasonalRetention': seasonal_retention
-        }
+        try:
+            # Monthly trends - fix the data structure
+            monthly_orders_count = df_filtered.groupby('month')['order_id'].count().to_dict()
+            monthly_revenue = df_filtered.groupby('month')['total_price_lkr'].sum().to_dict()
+            
+            # Convert month numbers to month names for better display
+            month_names = {
+                1: 'January', 2: 'February', 3: 'March', 4: 'April',
+                5: 'May', 6: 'June', 7: 'July', 8: 'August',
+                9: 'September', 10: 'October', 11: 'November', 12: 'December'
+            }
+            
+            # Convert to proper format for charts
+            monthly_orders_named = {}
+            monthly_revenue_named = {}
+            
+            for month_num, count in monthly_orders_count.items():
+                month_name = month_names.get(month_num, f'Month {month_num}')
+                monthly_orders_named[month_name] = count
+                
+            for month_num, revenue in monthly_revenue.items():
+                month_name = month_names.get(month_num, f'Month {month_num}')
+                monthly_revenue_named[month_name] = float(revenue)
+            
+            # Seasonal retention (simplified)
+            seasonal_retention = df_filtered.groupby('loyalty_group')['customer_id'].nunique().to_dict()
+            seasonal_retention = {str(k): int(v) for k, v in seasonal_retention.items()}
+            
+            # Season-wise analysis
+            season_mapping = {
+                1: 'Winter', 2: 'Winter', 3: 'Spring',
+                4: 'Spring', 5: 'Spring', 6: 'Summer',
+                7: 'Summer', 8: 'Summer', 9: 'Autumn',
+                10: 'Autumn', 11: 'Autumn', 12: 'Winter'
+            }
+            
+            df_filtered_copy = df_filtered.copy()
+            df_filtered_copy['season'] = df_filtered_copy['month'].map(season_mapping)
+            seasonal_orders = df_filtered_copy.groupby('season')['order_id'].count().to_dict()
+            seasonal_revenue = df_filtered_copy.groupby('season')['total_price_lkr'].sum().to_dict()
+            
+            return {
+                'monthlyOrders': {
+                    'order_id': monthly_orders_named,
+                    'revenue': monthly_revenue_named
+                },
+                'seasonalRetention': seasonal_retention,
+                'seasonalOrders': seasonal_orders,
+                'seasonalRevenue': {str(k): float(v) for k, v in seasonal_revenue.items()},
+                'totalOrders': len(df_filtered),
+                'totalRevenue': float(df_filtered['total_price_lkr'].sum())
+            }
+        except Exception as e:
+            print(f"Error in seasonal behavior analysis: {e}")
+            return {'error': f'Error processing seasonal data: {str(e)}'}
     
     def get_menu_analysis(self, outlet_id=None, season=None, festival=None):
         """Analyze menu performance"""
@@ -142,32 +189,57 @@ class RestaurantDataProcessor:
         if df_filtered.empty:
             return {'error': 'No data available for selected filters'}
         
-        # Popular items
-        popular_items = df_filtered.groupby('name').agg({
-            'quantity': 'sum',
-            'order_id': 'nunique'
-        }).reset_index()
-        popular_items.columns = ['itemName', 'totalQuantity', 'orderCount']
-        popular_items = popular_items.sort_values('orderCount', ascending=False).head(10)
-        
-        # Category analysis
-        category_analysis = df_filtered.groupby('category').agg({
-            'quantity': 'sum',
-            'price_lkr_y': 'sum'
-        }).reset_index()
-        
-        # Spice level preferences
-        spice_preferences = df_filtered['spice_level'].value_counts().to_dict()
-        
-        # Vegetarian analysis
-        veg_analysis = df_filtered['is_vegetarian'].value_counts().to_dict()
-        
-        return {
-            'popularItems': popular_items.to_dict('records'),
-            'categoryAnalysis': category_analysis.to_dict('records'),
-            'spicePreferences': spice_preferences,
-            'vegetarianAnalysis': veg_analysis
-        }
+        try:
+            # Popular items with more details
+            popular_items = df_filtered.groupby('name').agg({
+                'quantity': 'sum',
+                'order_id': 'nunique',
+                'price_lkr_y': ['mean', 'sum'],
+                'category': 'first'
+            }).reset_index()
+            
+            # Flatten column names
+            popular_items.columns = ['itemName', 'totalQuantity', 'orderCount', 'price', 'totalRevenue', 'category']
+            popular_items = popular_items.sort_values('orderCount', ascending=False).head(10)
+            
+            # Convert to proper data types
+            popular_items_records = []
+            for _, row in popular_items.iterrows():
+                popular_items_records.append({
+                    'itemName': str(row['itemName']),
+                    'totalQuantity': int(row['totalQuantity']),
+                    'orderCount': int(row['orderCount']),
+                    'price': float(row['price']),
+                    'totalRevenue': float(row['totalRevenue']),
+                    'category': str(row['category'])
+                })
+            
+            # Category analysis
+            category_analysis = df_filtered.groupby('category').agg({
+                'quantity': 'sum',
+                'price_lkr_y': 'sum',
+                'order_id': 'nunique'
+            }).reset_index()
+            category_analysis.columns = ['category', 'totalQuantity', 'totalRevenue', 'orderCount']
+            
+            # Spice level preferences
+            spice_preferences = df_filtered['spice_level'].value_counts().to_dict()
+            spice_preferences = {str(k): int(v) for k, v in spice_preferences.items()}
+            
+            # Vegetarian analysis
+            veg_analysis = df_filtered['is_vegetarian'].value_counts().to_dict()
+            veg_analysis = {str(k): int(v) for k, v in veg_analysis.items()}
+            
+            return {
+                'popularItems': popular_items_records,
+                'categoryAnalysis': category_analysis.to_dict('records'),
+                'spicePreferences': spice_preferences,
+                'vegetarianAnalysis': veg_analysis
+            }
+            
+        except Exception as e:
+            print(f"Error in menu analysis: {e}")
+            return {'error': f'Error processing menu data: {str(e)}'}
     
     def get_revenue_analysis(self, outlet_id=None, season=None, festival=None):
         """Analyze revenue metrics"""
@@ -176,36 +248,66 @@ class RestaurantDataProcessor:
         if df_filtered.empty:
             return {'error': 'No data available for selected filters'}
         
-        # Revenue summary
-        total_revenue = df_filtered['total_price_lkr'].sum()
-        total_orders = df_filtered['order_id'].nunique()
-        avg_order_value = total_revenue / total_orders if total_orders > 0 else 0
-        
-        # Daily revenue
-        daily_revenue = df_filtered.groupby('date')['total_price_lkr'].sum().to_dict()
-        daily_revenue = {str(k): v for k, v in daily_revenue.items()}
-        
-        # Payment method analysis
-        payment_methods = df_filtered.groupby('payment_method')['total_price_lkr'].sum().to_dict()
-        
-        # Outlet revenue comparison
-        outlet_revenue = df_filtered.groupby('name_y').agg({
-            'total_price_lkr': 'sum',
-            'order_id': 'nunique'
-        }).reset_index()
-        outlet_revenue.columns = ['outletName', 'revenue', 'orderCount']
-        outlet_revenue['avgOrderValue'] = outlet_revenue['revenue'] / outlet_revenue['orderCount']
-        
-        return {
-            'revenueSummary': {
-                'totalRevenue': total_revenue,
-                'totalOrders': total_orders,
-                'averageOrderValue': avg_order_value
-            },
-            'dailyRevenue': daily_revenue,
-            'paymentMethods': payment_methods,
-            'outletRevenue': outlet_revenue.to_dict('records')
-        }
+        try:
+            # Revenue summary
+            total_revenue = float(df_filtered['total_price_lkr'].sum())
+            total_orders = int(df_filtered['order_id'].nunique())
+            avg_order_value = total_revenue / total_orders if total_orders > 0 else 0
+            
+            # Daily revenue
+            daily_revenue = df_filtered.groupby('date')['total_price_lkr'].sum()
+            daily_revenue = {str(k): float(v) for k, v in daily_revenue.items()}
+            
+            # Calculate growth rate from daily revenue
+            growth_rate = "N/A"
+            if len(daily_revenue) > 1:
+                revenue_values = list(daily_revenue.values())
+                if len(revenue_values) >= 2:
+                    first_half = revenue_values[:len(revenue_values)//2]
+                    second_half = revenue_values[len(revenue_values)//2:]
+                    
+                    avg_first = sum(first_half) / len(first_half) if first_half else 0
+                    avg_second = sum(second_half) / len(second_half) if second_half else 0
+                    
+                    if avg_first > 0:
+                        growth_rate = round(((avg_second - avg_first) / avg_first) * 100, 1)
+            
+            # Payment method analysis
+            payment_methods = df_filtered.groupby('payment_method')['total_price_lkr'].sum()
+            payment_methods = {str(k): float(v) for k, v in payment_methods.items()}
+            
+            # Outlet revenue comparison
+            outlet_revenue = df_filtered.groupby('name_y').agg({
+                'total_price_lkr': 'sum',
+                'order_id': 'nunique'
+            }).reset_index()
+            outlet_revenue.columns = ['outletName', 'revenue', 'orderCount']
+            outlet_revenue['avgOrderValue'] = outlet_revenue['revenue'] / outlet_revenue['orderCount']
+            
+            # Convert to proper data types
+            outlet_revenue_records = []
+            for _, row in outlet_revenue.iterrows():
+                outlet_revenue_records.append({
+                    'outletName': str(row['outletName']),
+                    'revenue': float(row['revenue']),
+                    'orderCount': int(row['orderCount']),
+                    'avgOrderValue': float(row['avgOrderValue'])
+                })
+            
+            return {
+                'revenueSummary': {
+                    'totalRevenue': total_revenue,
+                    'totalOrders': total_orders,
+                    'averageOrderValue': avg_order_value,
+                    'revenueGrowthRate': growth_rate
+                },
+                'dailyRevenue': daily_revenue,
+                'paymentMethods': payment_methods,
+                'outletRevenue': outlet_revenue_records
+            }
+        except Exception as e:
+            print(f"Error in revenue analysis: {e}")
+            return {'error': f'Error processing revenue data: {str(e)}'}
     
     def get_branch_performance(self, outlet_id=None, season=None, festival=None):
         """Analyze branch performance"""

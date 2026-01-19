@@ -41,6 +41,26 @@ def analysis():
     except Exception as e:
         return render_template('analysis.html', outlets=[], error=str(e))
 
+@app.route('/analysis/<analysis_type>')
+def analysis_specific(analysis_type):
+    """Specific analysis page"""
+    try:
+        outlets = data_processor.get_outlets()
+        
+        # Validate analysis type
+        valid_types = [
+            'peak-dining', 'customer-demographics', 'customer-seasonal', 'seasonal-behavior',
+            'menu-analysis', 'revenue-analysis', 'anomaly-detection', 'branch-performance'
+        ]
+        
+        if analysis_type not in valid_types:
+            return render_template('analysis.html', outlets=outlets, analysis_type='general', error=f'Invalid analysis type: {analysis_type}')
+        
+        return render_template('analysis.html', outlets=outlets, analysis_type=analysis_type)
+        
+    except Exception as e:
+        return render_template('analysis.html', outlets=[], analysis_type='general', error=str(e))
+
 @app.route('/reports')
 def reports():
     """Reports page"""
@@ -73,7 +93,7 @@ def get_analytics(analysis_type):
             data = data_processor.get_peak_dining_analysis(outlet_id, season, festival)
         elif analysis_type == 'customer-demographics':
             data = data_processor.get_customer_demographics(outlet_id, season, festival)
-        elif analysis_type == 'customer-seasonal':
+        elif analysis_type == 'customer-seasonal' or analysis_type == 'seasonal-behavior':
             data = data_processor.get_seasonal_behavior(outlet_id, season, festival)
         elif analysis_type == 'menu-analysis':
             data = data_processor.get_menu_analysis(outlet_id, season, festival)
