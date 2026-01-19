@@ -4,16 +4,16 @@
 
 {% block content %}
 <div class="container-fluid px-4">
-    <!-- Page Header -->
+    <!-- Simple Page Header -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h3 mb-1" style="color: #2c3e50; font-weight: 600;">Dashboard Overview</h1>
+                    <h1 class="h3 mb-1" style="color: #333333; font-weight: 600;">Dashboard Overview</h1>
                     <p class="text-muted mb-0" style="font-size: 0.9rem;">Welcome back! Here's what's happening with your restaurants today.</p>
                 </div>
                 <div>
-                    <select class="form-select form-select-sm" style="width: auto; border-radius: 8px;">
+                    <select class="form-select form-select-sm" style="width: auto; border-radius: 6px; border: 1px solid #dee2e6;">
                         <option>Select period...</option>
                         <option>Today</option>
                         <option>This Week</option>
@@ -25,24 +25,22 @@
         </div>
     </div>
 
-    <!-- Key Metrics Cards -->
-    <div class="row g-3 mb-4">
-    <!-- Key Metrics Cards -->
+    <!-- Simple Key Metrics Cards -->
     <div class="row g-3 mb-4">
         <!-- New Orders -->
         <div class="col-xl-3 col-md-6">
-            <div class="metric-card-modern">
+            <div class="simple-metric-card">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">New Orders</p>
-                        <h2 class="mb-0" style="font-weight: 700; color: #2c3e50;">234</h2>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">New Orders</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">234</h2>
                     </div>
-                    <div class="metric-icon" style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);">
+                    <div class="simple-metric-icon" style="background: #28a745;">
                         <i class="fas fa-arrow-up"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-success-soft me-2">
+                    <span class="badge bg-success me-2">
                         <i class="fas fa-arrow-up me-1"></i>12%
                     </span>
                     <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
@@ -52,18 +50,18 @@
 
         <!-- Total Revenue -->
         <div class="col-xl-3 col-md-6">
-            <div class="metric-card-modern">
+            <div class="simple-metric-card">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Revenue</p>
-                        <h2 class="mb-0" style="font-weight: 700; color: #2c3e50;">LKR 1.45M</h2>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">Total Revenue</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">LKR 1.45M</h2>
                     </div>
-                    <div class="metric-icon" style="background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);">
+                    <div class="simple-metric-icon" style="background: #007bff;">
                         <i class="fas fa-dollar-sign"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-primary-soft me-2">
+                    <span class="badge bg-primary me-2">
                         <i class="fas fa-arrow-up me-1"></i>8%
                     </span>
                     <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
@@ -73,18 +71,18 @@
 
         <!-- Active Customers -->
         <div class="col-xl-3 col-md-6">
-            <div class="metric-card-modern">
+            <div class="simple-metric-card">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Customers</p>
-                        <h2 class="mb-0" style="font-weight: 700; color: #2c3e50;">1,234</h2>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">Active Customers</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">1,234</h2>
                     </div>
-                    <div class="metric-icon" style="background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);">
+                    <div class="simple-metric-icon" style="background: #ffc107;">
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-warning-soft me-2">
+                    <span class="badge bg-warning me-2">
                         <i class="fas fa-arrow-up me-1"></i>5%
                     </span>
                     <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
@@ -92,20 +90,20 @@
             </div>
         </div>
 
-        <!-- New Employees -->
+        <!-- Total Orders -->
         <div class="col-xl-3 col-md-6">
-            <div class="metric-card-modern">
+            <div class="simple-metric-card">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Orders</p>
-                        <h2 class="mb-0" style="font-weight: 700; color: #2c3e50;">34</h2>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">Total Orders</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">34</h2>
                     </div>
-                    <div class="metric-icon" style="background: linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%);">
+                    <div class="simple-metric-icon" style="background: #6f42c1;">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-purple-soft me-2">
+                    <span class="badge bg-info me-2">
                         <i class="fas fa-arrow-up me-1"></i>15%
                     </span>
                     <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
@@ -114,17 +112,17 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Simple Charts Row -->
     <div class="row g-3 mb-4">
-        <!-- Traffic Sources Chart -->
+        <!-- Order Trends Chart -->
         <div class="col-xl-8">
-            <div class="chart-card-modern">
+            <div class="simple-chart-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h5 class="mb-1" style="font-weight: 600; color: #2c3e50;">Order Trends</h5>
+                        <h5 class="mb-1" style="font-weight: 600; color: #333333;">Order Trends</h5>
                         <p class="text-muted mb-0" style="font-size: 0.85rem;">Daily order volume and revenue</p>
                     </div>
-                    <button class="btn btn-sm btn-warning" style="border-radius: 8px; font-weight: 500;">
+                    <button class="btn btn-sm btn-outline-primary" style="border-radius: 6px; font-weight: 500;">
                         Actions
                     </button>
                 </div>
@@ -132,15 +130,15 @@
             </div>
         </div>
 
-        <!-- Income Donut Chart -->
+        <!-- Revenue Distribution Chart -->
         <div class="col-xl-4">
-            <div class="chart-card-modern">
+            <div class="simple-chart-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h5 class="mb-1" style="font-weight: 600; color: #2c3e50;">Revenue Distribution</h5>
+                        <h5 class="mb-1" style="font-weight: 600; color: #333333;">Revenue Distribution</h5>
                         <p class="text-muted mb-0" style="font-size: 0.85rem;">By outlet</p>
                     </div>
-                    <button class="btn btn-sm btn-light" style="border-radius: 8px;">
+                    <button class="btn btn-sm btn-outline-secondary" style="border-radius: 6px;">
                         <i class="fas fa-cog"></i>
                     </button>
                 </div>
@@ -149,7 +147,7 @@
                         <canvas id="revenueDonutChart" width="200" height="200"></canvas>
                         <div class="donut-center-text">
                             <div style="font-size: 0.85rem; color: #6c757d;">Percent</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #2c3e50;">75</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #333333;">75</div>
                         </div>
                     </div>
                 </div>
@@ -158,7 +156,7 @@
                         <span style="font-size: 0.9rem; color: #6c757d;">32%</span>
                         <div class="flex-grow-1 mx-3">
                             <div class="progress" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar" style="width: 32%; background: #FFA726;"></div>
+                                <div class="progress-bar" style="width: 32%; background: #ffc107;"></div>
                             </div>
                         </div>
                         <span style="font-size: 0.85rem; color: #6c757d;">Spendings Target</span>
@@ -168,14 +166,14 @@
         </div>
     </div>
 
-    <!-- Bottom Metrics Row -->
+    <!-- Simple Bottom Metrics Row -->
     <div class="row g-3 mb-4">
         <!-- Income -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card-modern">
+            <div class="simple-stat-card">
                 <p class="text-muted mb-2" style="font-size: 0.85rem;">Income</p>
-                <h4 class="mb-2" style="font-weight: 700; color: #2c3e50;">LKR 5,456</h4>
-                <span class="badge bg-success-soft">
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 5,456</h4>
+                <span class="badge bg-success">
                     <i class="fas fa-arrow-up me-1"></i>+16%
                 </span>
             </div>
@@ -183,10 +181,10 @@
 
         <!-- Expenses -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card-modern">
+            <div class="simple-stat-card">
                 <p class="text-muted mb-2" style="font-size: 0.85rem;">Expenses</p>
-                <h4 class="mb-2" style="font-weight: 700; color: #2c3e50;">LKR 4,764</h4>
-                <span class="badge bg-danger-soft">
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 4,764</h4>
+                <span class="badge bg-danger">
                     <i class="fas fa-arrow-up me-1"></i>8%
                 </span>
             </div>
@@ -194,10 +192,10 @@
 
         <!-- Spendings -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card-modern">
+            <div class="simple-stat-card">
                 <p class="text-muted mb-2" style="font-size: 0.85rem;">Spendings</p>
-                <h4 class="mb-2" style="font-weight: 700; color: #2c3e50;">LKR 1.5M</h4>
-                <span class="badge bg-success-soft">
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 1.5M</h4>
+                <span class="badge bg-success">
                     <i class="fas fa-arrow-down me-1"></i>15%
                 </span>
             </div>
@@ -205,57 +203,57 @@
 
         <!-- Totals -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card-modern">
+            <div class="simple-stat-card">
                 <p class="text-muted mb-2" style="font-size: 0.85rem;">Totals</p>
-                <h4 class="mb-2" style="font-weight: 700; color: #2c3e50;">LKR 31,564</h4>
-                <span class="badge bg-warning-soft">
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 31,564</h4>
+                <span class="badge bg-warning">
                     <i class="fas fa-arrow-up me-1"></i>+76%
                 </span>
             </div>
         </div>
     </div>
 
-    <!-- Target Section -->
+    <!-- Simple Target Section -->
     <div class="row g-3 mb-4">
         <div class="col-12">
-            <div class="chart-card-modern">
+            <div class="simple-chart-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0" style="font-weight: 600; color: #2c3e50;">Target Section</h5>
-                    <a href="#" class="text-decoration-none" style="color: #88c2cd; font-size: 0.9rem; font-weight: 500;">View Details</a>
+                    <h5 class="mb-0" style="font-weight: 600; color: #333333;">Target Section</h5>
+                    <a href="#" class="text-decoration-none" style="color: #4a90e2; font-size: 0.9rem; font-weight: 500;">View Details</a>
                 </div>
                 <div class="row g-3">
                     <div class="col-xl-3 col-md-6">
-                        <div class="target-card">
-                            <h3 class="mb-2" style="font-weight: 700; color: #E91E63;">71%</h3>
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #dc3545;">71%</h3>
                             <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar" style="width: 71%; background: #E91E63;"></div>
+                                <div class="progress-bar" style="width: 71%; background: #dc3545;"></div>
                             </div>
                             <p class="text-muted mb-0" style="font-size: 0.85rem;">Income Target</p>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                        <div class="target-card">
-                            <h3 class="mb-2" style="font-weight: 700; color: #4CAF50;">54%</h3>
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #28a745;">54%</h3>
                             <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar" style="width: 54%; background: #4CAF50;"></div>
+                                <div class="progress-bar" style="width: 54%; background: #28a745;"></div>
                             </div>
                             <p class="text-muted mb-0" style="font-size: 0.85rem;">Expenses Target</p>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                        <div class="target-card">
-                            <h3 class="mb-2" style="font-weight: 700; color: #FFA726;">32%</h3>
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #ffc107;">32%</h3>
                             <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar" style="width: 32%; background: #FFA726;"></div>
+                                <div class="progress-bar" style="width: 32%; background: #ffc107;"></div>
                             </div>
                             <p class="text-muted mb-0" style="font-size: 0.85rem;">Spendings Target</p>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                        <div class="target-card">
-                            <h3 class="mb-2" style="font-weight: 700; color: #2196F3;">89%</h3>
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #007bff;">89%</h3>
                             <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar" style="width: 89%; background: #2196F3;"></div>
+                                <div class="progress-bar" style="width: 89%; background: #007bff;"></div>
                             </div>
                             <p class="text-muted mb-0" style="font-size: 0.85rem;">Totals Target</p>
                         </div>
@@ -265,233 +263,199 @@
         </div>
     </div>
 
-    <!-- Quick Access Analytics Modules -->
+    <!-- Simple Analytics Modules -->
     <div class="row g-3 mb-4">
         <div class="col-12">
-            <h5 class="mb-3" style="font-weight: 600; color: #2c3e50;">Analytics Modules</h5>
-        </div>
-        <div class="col-12">
-            <h5 class="mb-3" style="font-weight: 600; color: #2c3e50;">Analytics Modules</h5>
+            <h5 class="mb-3" style="font-weight: 600; color: #333333;">Analytics Modules</h5>
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/peak-dining" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);">
+            <a href="/analysis/peak-dining" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Peak Dining</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Peak Dining</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Hours & Patterns</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/customer-demographics" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);">
+            <a href="/analysis/customer-demographics" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Demographics</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Demographics</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Customer Analysis</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/menu-analysis" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);">
+            <a href="/analysis/menu-analysis" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
                     <i class="fas fa-utensils"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Menu Analysis</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Menu Analysis</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Items & Categories</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/revenue-analysis" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%);">
+            <a href="/analysis/revenue-analysis" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
                     <i class="fas fa-dollar-sign"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Revenue</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Revenue</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Financial Metrics</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/customer-seasonal" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #00BCD4 0%, #26C6DA 100%);">
+            <a href="/analysis/customer-seasonal" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Seasonal</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Seasonal</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Trends & Retention</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/anomaly-detection" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);">
+            <a href="/analysis/anomaly-detection" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Anomalies</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Anomalies</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Alerts & Monitoring</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/analysis/branch-performance" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #607D8B 0%, #78909C 100%);">
+            <a href="/analysis/branch-performance" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
                     <i class="fas fa-building"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Branch Performance</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Branch Performance</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Rankings & Efficiency</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="/reports/" class="analytics-module-card">
-                <div class="module-icon-small" style="background: linear-gradient(135deg, #795548 0%, #8D6E63 100%);">
+            <a href="/reports/" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
                     <i class="fas fa-file-alt"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="mb-1" style="font-weight: 600; color: #2c3e50;">Reports</h6>
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Reports</h6>
                     <p class="text-muted mb-0" style="font-size: 0.85rem;">Export & Download</p>
                 </div>
-                <i class="fas fa-arrow-right" style="color: #88c2cd;"></i>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
             </a>
         </div>
     </div>
 </div>
 
 <style>
-/* Modern Card Styles */
-.metric-card-modern {
+/* Simple Card Styles */
+.simple-metric-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 1.5rem;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
     height: 100%;
 }
 
-.metric-card-modern:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+.simple-metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
 }
 
-.metric-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+.simple-metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
-.chart-card-modern {
+.simple-chart-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 1.5rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e9ecef;
     height: 100%;
 }
 
-.stat-card-modern {
+.simple-stat-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 1.25rem;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
 }
 
-.stat-card-modern:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+.simple-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.target-card {
+.simple-target-card {
     background: #f8f9fa;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 1.25rem;
 }
 
-.analytics-module-card {
+.simple-analytics-module {
     display: flex;
     align-items: center;
     gap: 1rem;
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 1.25rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e9ecef;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.analytics-module-card:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-    border-color: #88c2cd;
+.simple-analytics-module:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    border-color: #4a90e2;
 }
 
-.module-icon-small {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
+.simple-module-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.1rem;
+    font-size: 1rem;
     flex-shrink: 0;
-}
-
-/* Badge Styles */
-.badge.bg-success-soft {
-    background: #d4edda !important;
-    color: #155724 !important;
-    font-weight: 500;
-}
-
-.badge.bg-danger-soft {
-    background: #f8d7da !important;
-    color: #721c24 !important;
-    font-weight: 500;
-}
-
-.badge.bg-primary-soft {
-    background: #cfe2ff !important;
-    color: #084298 !important;
-    font-weight: 500;
-}
-
-.badge.bg-warning-soft {
-    background: #fff3cd !important;
-    color: #856404 !important;
-    font-weight: 500;
-}
-
-.badge.bg-purple-soft {
-    background: #e7d6f5 !important;
-    color: #6f42c1 !important;
-    font-weight: 500;
 }
 
 /* Donut Chart Container */
@@ -512,9 +476,9 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .metric-card-modern,
-    .chart-card-modern,
-    .stat-card-modern {
+    .simple-metric-card,
+    .simple-chart-card,
+    .simple-stat-card {
         padding: 1rem;
     }
 }
@@ -531,7 +495,7 @@ if (ctx) {
             labels: ['Outlet 1', 'Outlet 2', 'Outlet 3', 'Outlet 4'],
             datasets: [{
                 data: [30, 25, 25, 20],
-                backgroundColor: ['#4CAF50', '#2196F3', '#FFA726', '#9C27B0'],
+                backgroundColor: ['#28a745', '#007bff', '#ffc107', '#6f42c1'],
                 borderWidth: 0
             }]
         },
@@ -554,7 +518,7 @@ const orderData = {
     y: [450, 550, 420, 680, 250, 450, 180, 350, 750, 320, 150, 200],
     type: 'bar',
     marker: {
-        color: '#2196F3',
+        color: '#007bff',
         opacity: 0.8
     },
     name: 'Orders'
@@ -566,12 +530,12 @@ const revenueData = {
     type: 'scatter',
     mode: 'lines+markers',
     line: {
-        color: '#4CAF50',
+        color: '#28a745',
         width: 3
     },
     marker: {
         size: 8,
-        color: '#4CAF50'
+        color: '#28a745'
     },
     name: 'Revenue',
     yaxis: 'y2'

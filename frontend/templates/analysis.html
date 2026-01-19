@@ -309,7 +309,7 @@ function displayTables(data) {
                             <tbody>
                                 ${data.peakHourTables.overallPeakHours.map((hour, index) => `
                                     <tr>
-                                        <td><span class="badge bg-primary">${index + 1}</span></td>
+                                        <td><span class="badge" style="background-color: #4a90e2; color: white;">${index + 1}</span></td>
                                         <td>${hour.hour}:00</td>
                                         <td>${hour.timeRange}</td>
                                         <td><strong>${hour.orderCount}</strong></td>
@@ -345,9 +345,9 @@ function displayTables(data) {
                             <tbody>
                                 ${data.popularItems.slice(0, 10).map((item, index) => `
                                     <tr>
-                                        <td><span class="badge bg-success">${index + 1}</span></td>
+                                        <td><span class="badge" style="background-color: #4a90e2; color: white;">${index + 1}</span></td>
                                         <td><strong>${item.itemName}</strong></td>
-                                        <td><span class="badge bg-secondary">${item.category}</span></td>
+                                        <td><span class="badge" style="background-color: #6c757d; color: white;">${item.category}</span></td>
                                         <td>${item.orderCount}</td>
                                         <td>LKR ${item.totalRevenue.toLocaleString()}</td>
                                         <td>LKR ${item.price}</td>
@@ -382,7 +382,7 @@ function displayTables(data) {
                             <tbody>
                                 ${data.branchRankings.map((branch, index) => `
                                     <tr>
-                                        <td><span class="badge bg-warning">${index + 1}</span></td>
+                                        <td><span class="badge" style="background-color: #4a90e2; color: white;">${index + 1}</span></td>
                                         <td><strong>${branch.branchName}</strong></td>
                                         <td>LKR ${branch.revenue.toLocaleString()}</td>
                                         <td>${branch.orderCount}</td>
@@ -418,8 +418,8 @@ function displayTables(data) {
                                 ${data.alertLogs.map(alert => `
                                     <tr>
                                         <td><code>${alert.alertId}</code></td>
-                                        <td><span class="badge bg-info">${alert.type}</span></td>
-                                        <td><span class="badge bg-${alert.severity === 'HIGH' ? 'danger' : alert.severity === 'MEDIUM' ? 'warning' : 'success'}">${alert.severity}</span></td>
+                                        <td><span class="badge" style="background-color: #6c757d; color: white;">${alert.type}</span></td>
+                                        <td><span class="badge" style="background-color: ${alert.severity === 'HIGH' ? '#dc3545' : alert.severity === 'MEDIUM' ? '#6c757d' : '#4a90e2'}; color: white;">${alert.severity}</span></td>
                                         <td>${alert.message}</td>
                                     </tr>
                                 `).join('')}

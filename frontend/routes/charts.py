@@ -118,14 +118,16 @@ def create_peak_dining_charts(data):
                 z=z_data,
                 x=hours,
                 y=outlets,
-                colorscale='Viridis',
+                colorscale=[[0, '#f8f9fa'], [0.5, '#6c757d'], [1, '#4a90e2']],
                 hoverongaps=False
             ))
             heatmap.update_layout(
                 title='Order Volume Heatmap by Hour',
                 xaxis_title='Hour of Day',
                 yaxis_title='Outlet',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['heatmap'] = json.dumps(heatmap, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -138,13 +140,15 @@ def create_peak_dining_charts(data):
             daily_chart = go.Figure(data=go.Bar(
                 x=days,
                 y=counts,
-                marker_color='lightblue'
+                marker_color='#4a90e2'
             ))
             daily_chart.update_layout(
                 title='Orders by Day of Week',
                 xaxis_title='Day',
                 yaxis_title='Order Count',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['daily_patterns'] = json.dumps(daily_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -157,13 +161,15 @@ def create_peak_dining_charts(data):
             peak_chart = go.Figure(data=go.Bar(
                 x=hours,
                 y=counts,
-                marker_color='orange'
+                marker_color='#6c757d'
             ))
             peak_chart.update_layout(
                 title='Top Peak Hours',
                 xaxis_title='Hour',
                 yaxis_title='Order Count',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['peak_hours'] = json.dumps(peak_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -186,11 +192,14 @@ def create_customer_demographics_charts(data):
             age_chart = go.Figure(data=go.Pie(
                 labels=labels,
                 values=values,
-                hole=0.3
+                hole=0.3,
+                marker_colors=['#4a90e2', '#6c757d', '#f8f9fa', '#e9ecef', '#dee2e6']
             ))
             age_chart.update_layout(
                 title='Customer Age Distribution',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['age_distribution'] = json.dumps(age_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -203,13 +212,15 @@ def create_customer_demographics_charts(data):
             gender_chart = go.Figure(data=go.Bar(
                 x=genders,
                 y=counts,
-                marker_color=['pink', 'lightblue', 'lightgreen']
+                marker_color=['#4a90e2', '#6c757d', '#e9ecef']
             ))
             gender_chart.update_layout(
                 title='Customer Gender Distribution',
                 xaxis_title='Gender',
                 yaxis_title='Count',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['gender_distribution'] = json.dumps(gender_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -221,11 +232,14 @@ def create_customer_demographics_charts(data):
             
             loyalty_chart = go.Figure(data=go.Pie(
                 labels=groups,
-                values=counts
+                values=counts,
+                marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6']
             ))
             loyalty_chart.update_layout(
                 title='Customer Loyalty Distribution',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['loyalty_distribution'] = json.dumps(loyalty_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -249,13 +263,15 @@ def create_menu_analysis_charts(data):
                 x=order_counts,
                 y=item_names,
                 orientation='h',
-                marker_color='lightcoral'
+                marker_color='#4a90e2'
             ))
             popular_chart.update_layout(
                 title='Top 10 Popular Menu Items',
                 xaxis_title='Order Count',
                 yaxis_title='Menu Item',
-                height=500
+                height=500,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['popular_items'] = json.dumps(popular_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -267,11 +283,14 @@ def create_menu_analysis_charts(data):
             
             category_chart = go.Figure(data=go.Pie(
                 labels=categories,
-                values=counts
+                values=counts,
+                marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6', '#f8f9fa']
             ))
             category_chart.update_layout(
                 title='Orders by Menu Category',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['category_analysis'] = json.dumps(category_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -284,13 +303,15 @@ def create_menu_analysis_charts(data):
             spice_chart = go.Figure(data=go.Bar(
                 x=spice_levels,
                 y=counts,
-                marker_color='red'
+                marker_color='#6c757d'
             ))
             spice_chart.update_layout(
                 title='Spice Level Preferences',
                 xaxis_title='Spice Level',
                 yaxis_title='Order Count',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['spice_preferences'] = json.dumps(spice_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -314,13 +335,15 @@ def create_revenue_analysis_charts(data):
                 x=dates,
                 y=revenues,
                 mode='lines+markers',
-                line=dict(color='green')
+                line=dict(color='#4a90e2')
             ))
             daily_chart.update_layout(
                 title='Daily Revenue Trend',
                 xaxis_title='Date',
                 yaxis_title='Revenue (LKR)',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['daily_revenue'] = json.dumps(daily_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -332,11 +355,14 @@ def create_revenue_analysis_charts(data):
             
             payment_chart = go.Figure(data=go.Pie(
                 labels=methods,
-                values=counts
+                values=counts,
+                marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6']
             ))
             payment_chart.update_layout(
                 title='Orders by Payment Method',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['payment_methods'] = json.dumps(payment_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -349,13 +375,15 @@ def create_revenue_analysis_charts(data):
             outlet_chart = go.Figure(data=go.Bar(
                 x=outlets,
                 y=revenues,
-                marker_color='gold'
+                marker_color='#6c757d'
             ))
             outlet_chart.update_layout(
                 title='Revenue by Outlet',
                 xaxis_title='Outlet',
                 yaxis_title='Revenue (LKR)',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['outlet_revenue'] = json.dumps(outlet_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -378,14 +406,16 @@ def create_branch_performance_charts(data):
             ranking_chart = go.Figure(data=go.Bar(
                 x=branch_names,
                 y=revenues,
-                marker_color='purple'
+                marker_color='#4a90e2'
             ))
             ranking_chart.update_layout(
                 title='Top 10 Branch Performance by Revenue',
                 xaxis_title='Branch',
                 yaxis_title='Revenue (LKR)',
                 height=400,
-                xaxis_tickangle=-45
+                xaxis_tickangle=-45,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['branch_rankings'] = json.dumps(ranking_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
@@ -398,13 +428,15 @@ def create_branch_performance_charts(data):
             aov_chart = go.Figure(data=go.Bar(
                 x=outlets,
                 y=avg_order_values,
-                marker_color='teal'
+                marker_color='#6c757d'
             ))
             aov_chart.update_layout(
                 title='Average Order Value by Branch',
                 xaxis_title='Outlet',
                 yaxis_title='Average Order Value (LKR)',
-                height=400
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
             )
             charts['aov_comparison'] = json.dumps(aov_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
