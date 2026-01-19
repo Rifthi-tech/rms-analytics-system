@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: com.restaurant.UnitTests
+Test set: com.restaurant.PerformanceTests
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in com.restaurant.UnitTests
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in com.restaurant.PerformanceTests
