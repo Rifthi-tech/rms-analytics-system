@@ -4,12 +4,10 @@ import json
 from routes.dashboard import dashboard_bp
 from routes.reports import reports_bp
 from routes.charts import charts_bp
+from data_processor import data_processor
 
 app = Flask(__name__)
 app.secret_key = 'restaurant-analytics-secret-key'
-
-# Backend API configuration
-BACKEND_URL = 'http://localhost:8080/api/analytics'
 
 # Register blueprints
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
@@ -18,54 +16,90 @@ app.register_blueprint(charts_bp, url_prefix='/charts')
 
 @app.route('/')
 def index():
-    """Main dashboard page"""
+    """Main dashboard page - redirect to dashboard overview"""
     try:
-        # Get outlets for dropdown
-        outlets_response = requests.get(f'{BACKEND_URL}/outlets')
-        outlets = outlets_response.json() if outlets_response.status_code == 200 else []
-        
-        return render_template('index.html', outlets=outlets)
+        outlets = data_processor.get_outlets()
+        return render_template('dashboard_overview.html', outlets=outlets)
     except Exception as e:
-        return render_template('index.html', outlets=[], error=str(e))
+        return render_template('dashboard_overview.html', outlets=[], error=str(e))
+
+@app.route('/dashboard-overview')
+def dashboard_overview():
+    """Dashboard overview page"""
+    try:
+        outlets = data_processor.get_outlets()
+        return render_template('dashboard_overview.html', outlets=outlets)
+    except Exception as e:
+        return render_template('dashboard_overview.html', outlets=[], error=str(e))
+
+@app.route('/analysis')
+def analysis():
+    """Analysis page"""
+    try:
+        outlets = data_processor.get_outlets()
+        return render_template('analysis.html', outlets=outlets)
+    except Exception as e:
+        return render_template('analysis.html', outlets=[], error=str(e))
+
+@app.route('/reports')
+def reports():
+    """Reports page"""
+    try:
+        outlets = data_processor.get_outlets()
+        return render_template('reports.html', outlets=outlets)
+    except Exception as e:
+        return render_template('reports.html', outlets=[], error=str(e))
 
 @app.route('/api/outlets')
 def get_outlets():
-    """Get list of outlets"""
+    """Get list of outlets from real data"""
     try:
-        response = requests.get(f'{BACKEND_URL}/outlets')
-        return jsonify(response.json())
+        outlets = data_processor.get_outlets()
+        return jsonify(outlets)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analytics/<analysis_type>')
 def get_analytics(analysis_type):
-    """Proxy endpoint for analytics data"""
+    """Get analytics data from real dataset"""
     try:
         # Get query parameters
-        params = dict(request.args)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        # Map analysis types to backend endpoints
-        endpoint_mapping = {
-            'peak-dining': 'peak-dining',
-            'customer-demographics': 'customer-demographics',
-            'customer-seasonal': 'customer-seasonal',
-            'menu-analysis': 'menu-analysis',
-            'revenue-analysis': 'revenue-analysis',
-            'anomaly-detection': 'anomaly-detection',
-            'branch-performance': 'branch-performance'
-        }
-        
-        if analysis_type not in endpoint_mapping:
+        # Route to appropriate analysis function
+        if analysis_type == 'peak-dining':
+            data = data_processor.get_peak_dining_analysis(outlet_id, season, festival)
+        elif analysis_type == 'customer-demographics':
+            data = data_processor.get_customer_demographics(outlet_id, season, festival)
+        elif analysis_type == 'customer-seasonal':
+            data = data_processor.get_seasonal_behavior(outlet_id, season, festival)
+        elif analysis_type == 'menu-analysis':
+            data = data_processor.get_menu_analysis(outlet_id, season, festival)
+        elif analysis_type == 'revenue-analysis':
+            data = data_processor.get_revenue_analysis(outlet_id, season, festival)
+        elif analysis_type == 'anomaly-detection':
+            data = data_processor.get_anomaly_detection(outlet_id, season, festival)
+        elif analysis_type == 'branch-performance':
+            data = data_processor.get_branch_performance(outlet_id, season, festival)
+        elif analysis_type == 'outlets':
+            data = data_processor.get_outlets()
+        else:
             return jsonify({'error': 'Invalid analysis type'}), 400
         
-        endpoint = endpoint_mapping[analysis_type]
-        response = requests.get(f'{BACKEND_URL}/{endpoint}', params=params)
-        
-        if response.status_code == 200:
-            return jsonify(response.json())
-        else:
-            return jsonify({'error': 'Backend service error'}), response.status_code
+        return jsonify(data)
             
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/forecast')
+def get_forecast():
+    """Get 6-month forecast"""
+    try:
+        outlet_id = request.args.get('outletId')
+        forecast = data_processor.get_6_month_forecast(outlet_id)
+        return jsonify(forecast)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

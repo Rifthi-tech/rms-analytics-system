@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, send_file, jsonify
-import requests
 import pandas as pd
 import io
 from reportlab.lib.pagesizes import letter
@@ -7,17 +6,18 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import json
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_processor import data_processor
 
 reports_bp = Blueprint('reports', __name__)
-BACKEND_URL = 'http://localhost:8080/api/analytics'
 
 @reports_bp.route('/')
 def reports_home():
     """Reports home page"""
     try:
-        outlets_response = requests.get(f'{BACKEND_URL}/outlets')
-        outlets = outlets_response.json() if outlets_response.status_code == 200 else []
-        
+        outlets = data_processor.get_outlets()
         return render_template('reports.html', outlets=outlets)
     except Exception as e:
         return render_template('reports.html', outlets=[], error=str(e))
@@ -27,15 +27,23 @@ def export_csv(analysis_type):
     """Export analysis data as CSV"""
     try:
         # Get query parameters
-        params = dict(request.args)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        # Get data from backend
-        response = requests.get(f'{BACKEND_URL}/{analysis_type}', params=params)
-        
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        # Get data from data processor
+        if analysis_type == 'peak-dining':
+            data = data_processor.get_peak_dining_analysis(outlet_id, season, festival)
+        elif analysis_type == 'customer-demographics':
+            data = data_processor.get_customer_demographics(outlet_id, season, festival)
+        elif analysis_type == 'menu-analysis':
+            data = data_processor.get_menu_analysis(outlet_id, season, festival)
+        elif analysis_type == 'revenue-analysis':
+            data = data_processor.get_revenue_analysis(outlet_id, season, festival)
+        elif analysis_type == 'branch-performance':
+            data = data_processor.get_branch_performance(outlet_id, season, festival)
+        else:
+            return jsonify({'error': 'Invalid analysis type'}), 400
         
         # Convert to CSV based on analysis type
         csv_data = convert_to_csv(data, analysis_type)
@@ -67,15 +75,23 @@ def export_pdf(analysis_type):
     """Export analysis data as PDF"""
     try:
         # Get query parameters
-        params = dict(request.args)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        # Get data from backend
-        response = requests.get(f'{BACKEND_URL}/{analysis_type}', params=params)
-        
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        # Get data from data processor
+        if analysis_type == 'peak-dining':
+            data = data_processor.get_peak_dining_analysis(outlet_id, season, festival)
+        elif analysis_type == 'customer-demographics':
+            data = data_processor.get_customer_demographics(outlet_id, season, festival)
+        elif analysis_type == 'menu-analysis':
+            data = data_processor.get_menu_analysis(outlet_id, season, festival)
+        elif analysis_type == 'revenue-analysis':
+            data = data_processor.get_revenue_analysis(outlet_id, season, festival)
+        elif analysis_type == 'branch-performance':
+            data = data_processor.get_branch_performance(outlet_id, season, festival)
+        else:
+            return jsonify({'error': 'Invalid analysis type'}), 400
         
         # Create PDF
         pdf_buffer = create_pdf_report(data, analysis_type)
@@ -112,24 +128,22 @@ def convert_peak_dining_to_csv(data):
     """Convert peak dining data to CSV"""
     rows = []
     
-    if 'peakHourTables' in data and 'overallPeakHours' in data['peakHourTables']:
-        for hour_data in data['peakHourTables']['overallPeakHours']:
+    # Daily patterns
+    if 'dailyPatterns' in data:
+        for day, count in data['dailyPatterns'].items():
             rows.append({
-                'Type': 'Peak Hour',
-                'Hour': hour_data.get('hour', ''),
-                'Order Count': hour_data.get('orderCount', 0),
-                'Time Range': hour_data.get('timeRange', '')
+                'Type': 'Daily Pattern',
+                'Day/Hour': day,
+                'Order Count': count
             })
     
-    if 'branchSummaries' in data:
-        for outlet_id, summary in data['branchSummaries'].items():
+    # Hourly patterns
+    if 'hourlyPatterns' in data:
+        for hour, count in data['hourlyPatterns'].items():
             rows.append({
-                'Type': 'Branch Summary',
-                'Outlet ID': outlet_id,
-                'Outlet Name': summary.get('outletName', ''),
-                'Total Orders': summary.get('totalOrders', 0),
-                'Total Revenue': summary.get('totalRevenue', 0),
-                'Average Order Value': summary.get('averageOrderValue', 0)
+                'Type': 'Hourly Pattern',
+                'Day/Hour': f"Hour {hour}",
+                'Order Count': count
             })
     
     return pd.DataFrame(rows)
@@ -154,8 +168,8 @@ def convert_customer_demographics_to_csv(data):
                 'Count': count
             })
     
-    if 'loyaltyGroupAnalysis' in data and 'distribution' in data['loyaltyGroupAnalysis']:
-        for loyalty_group, count in data['loyaltyGroupAnalysis']['distribution'].items():
+    if 'loyaltyDistribution' in data:
+        for loyalty_group, count in data['loyaltyDistribution'].items():
             rows.append({
                 'Category': 'Loyalty Distribution',
                 'Group': loyalty_group,
@@ -173,11 +187,7 @@ def convert_menu_analysis_to_csv(data):
             rows.append({
                 'Item Name': item.get('itemName', ''),
                 'Order Count': item.get('orderCount', 0),
-                'Total Revenue': item.get('totalRevenue', 0),
-                'Category': item.get('category', ''),
-                'Price': item.get('price', 0),
-                'Is Vegetarian': item.get('isVegetarian', False),
-                'Spice Level': item.get('spiceLevel', '')
+                'Total Quantity': item.get('totalQuantity', 0)
             })
     
     return pd.DataFrame(rows)
@@ -218,9 +228,7 @@ def convert_branch_performance_to_csv(data):
     if 'branchRankings' in data:
         for branch in data['branchRankings']:
             rows.append({
-                'Outlet ID': branch.get('outletId', ''),
                 'Branch Name': branch.get('branchName', ''),
-                'Borough': branch.get('borough', ''),
                 'Revenue': branch.get('revenue', 0),
                 'Order Count': branch.get('orderCount', 0),
                 'Average Order Value': branch.get('averageOrderValue', 0),

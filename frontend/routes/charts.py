@@ -1,23 +1,23 @@
 from flask import Blueprint, jsonify, request
-import requests
 import plotly.graph_objs as go
 import plotly.utils
 import json
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_processor import data_processor
 
 charts_bp = Blueprint('charts', __name__)
-BACKEND_URL = 'http://localhost:8080/api/analytics'
 
 @charts_bp.route('/peak-dining')
 def peak_dining_charts():
     """Generate charts for peak dining analysis"""
     try:
-        params = dict(request.args)
-        response = requests.get(f'{BACKEND_URL}/peak-dining', params=params)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        data = data_processor.get_peak_dining_analysis(outlet_id, season, festival)
         charts = create_peak_dining_charts(data)
         
         return jsonify(charts)
@@ -29,13 +29,11 @@ def peak_dining_charts():
 def customer_demographics_charts():
     """Generate charts for customer demographics"""
     try:
-        params = dict(request.args)
-        response = requests.get(f'{BACKEND_URL}/customer-demographics', params=params)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        data = data_processor.get_customer_demographics(outlet_id, season, festival)
         charts = create_customer_demographics_charts(data)
         
         return jsonify(charts)
@@ -47,13 +45,11 @@ def customer_demographics_charts():
 def menu_analysis_charts():
     """Generate charts for menu analysis"""
     try:
-        params = dict(request.args)
-        response = requests.get(f'{BACKEND_URL}/menu-analysis', params=params)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        data = data_processor.get_menu_analysis(outlet_id, season, festival)
         charts = create_menu_analysis_charts(data)
         
         return jsonify(charts)
@@ -65,13 +61,11 @@ def menu_analysis_charts():
 def revenue_analysis_charts():
     """Generate charts for revenue analysis"""
     try:
-        params = dict(request.args)
-        response = requests.get(f'{BACKEND_URL}/revenue-analysis', params=params)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        data = data_processor.get_revenue_analysis(outlet_id, season, festival)
         charts = create_revenue_analysis_charts(data)
         
         return jsonify(charts)
@@ -83,13 +77,11 @@ def revenue_analysis_charts():
 def branch_performance_charts():
     """Generate charts for branch performance"""
     try:
-        params = dict(request.args)
-        response = requests.get(f'{BACKEND_URL}/branch-performance', params=params)
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
         
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch data'}), 400
-        
-        data = response.json()
+        data = data_processor.get_branch_performance(outlet_id, season, festival)
         charts = create_branch_performance_charts(data)
         
         return jsonify(charts)
