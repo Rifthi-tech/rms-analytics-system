@@ -105,6 +105,22 @@ def seasonal_behavior_charts():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@charts_bp.route('/customer-seasonal')
+def customer_seasonal_charts():
+    """Generate charts for customer seasonal analysis (alias for seasonal-behavior)"""
+    try:
+        outlet_id = request.args.get('outletId')
+        season = request.args.get('season')
+        festival = request.args.get('festival')
+        
+        data = data_processor.get_seasonal_behavior(outlet_id, season, festival)
+        charts = create_seasonal_behavior_charts(data)
+        
+        return jsonify(charts)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @charts_bp.route('/anomaly-detection')
 def anomaly_detection_charts():
     """Generate charts for anomaly detection"""
@@ -248,9 +264,9 @@ def create_customer_demographics_charts(data):
             )
             charts['gender_distribution'] = json.dumps(gender_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
-        # Loyalty group analysis
-        if 'loyaltyGroupAnalysis' in data and 'distribution' in data['loyaltyGroupAnalysis']:
-            loyalty_data = data['loyaltyGroupAnalysis']['distribution']
+        # Loyalty distribution chart
+        if 'loyaltyDistribution' in data and data['loyaltyDistribution']:
+            loyalty_data = data['loyaltyDistribution']
             groups = list(loyalty_data.keys())
             counts = list(loyalty_data.values())
             
@@ -266,6 +282,27 @@ def create_customer_demographics_charts(data):
                 paper_bgcolor='white'
             )
             charts['loyalty_distribution'] = json.dumps(loyalty_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Loyalty segmentation chart
+        if 'loyaltySegmentation' in data and data['loyaltySegmentation']:
+            segmentation = data['loyaltySegmentation']
+            groups = list(segmentation.keys())
+            avg_spent = [segmentation[group]['avgSpent'] for group in groups]
+            
+            segmentation_chart = go.Figure(data=go.Bar(
+                x=groups,
+                y=avg_spent,
+                marker_color='#6c757d'
+            ))
+            segmentation_chart.update_layout(
+                title='Average Spending by Loyalty Group',
+                xaxis_title='Loyalty Group',
+                yaxis_title='Average Spent (LKR)',
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
+            charts['loyalty_segmentation'] = json.dumps(segmentation_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
     except Exception as e:
         print(f"Error creating customer demographics charts: {e}")
@@ -300,18 +337,18 @@ def create_menu_analysis_charts(data):
             charts['popular_items'] = json.dumps(popular_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
         # Category analysis pie chart
-        if 'categoryAnalysis' in data and 'ordersByCategory' in data['categoryAnalysis']:
-            category_data = data['categoryAnalysis']['ordersByCategory']
-            categories = list(category_data.keys())
-            counts = list(category_data.values())
+        if 'categoryAnalysis' in data and data['categoryAnalysis']:
+            category_data = data['categoryAnalysis']
+            categories = [item['category'] for item in category_data]
+            revenues = [item['totalRevenue'] for item in category_data]
             
             category_chart = go.Figure(data=go.Pie(
                 labels=categories,
-                values=counts,
+                values=revenues,
                 marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6', '#f8f9fa']
             ))
             category_chart.update_layout(
-                title='Orders by Menu Category',
+                title='Revenue by Menu Category',
                 height=400,
                 plot_bgcolor='white',
                 paper_bgcolor='white'
@@ -319,8 +356,8 @@ def create_menu_analysis_charts(data):
             charts['category_analysis'] = json.dumps(category_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
         # Spice level preferences
-        if 'spiceLevelPreferences' in data and data['spiceLevelPreferences']:
-            spice_data = data['spiceLevelPreferences']
+        if 'spicePreferences' in data and data['spicePreferences']:
+            spice_data = data['spicePreferences']
             spice_levels = list(spice_data.keys())
             counts = list(spice_data.values())
             
@@ -338,6 +375,47 @@ def create_menu_analysis_charts(data):
                 paper_bgcolor='white'
             )
             charts['spice_preferences'] = json.dumps(spice_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Vegetarian vs Non-vegetarian
+        if 'vegetarianAnalysis' in data and data['vegetarianAnalysis']:
+            veg_data = data['vegetarianAnalysis']
+            labels = ['Vegetarian' if k == 'True' else 'Non-Vegetarian' for k in veg_data.keys()]
+            values = list(veg_data.values())
+            
+            veg_chart = go.Figure(data=go.Pie(
+                labels=labels,
+                values=values,
+                marker_colors=['#4a90e2', '#6c757d']
+            ))
+            veg_chart.update_layout(
+                title='Vegetarian vs Non-Vegetarian Orders',
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
+            charts['vegetarian_analysis'] = json.dumps(veg_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Item combinations chart
+        if 'itemCombinations' in data and data['itemCombinations']:
+            combinations = data['itemCombinations'][:5]  # Top 5 combinations
+            combo_labels = [f"{combo['item1']} + {combo['item2']}" for combo in combinations]
+            frequencies = [combo['frequency'] for combo in combinations]
+            
+            combo_chart = go.Figure(data=go.Bar(
+                x=frequencies,
+                y=combo_labels,
+                orientation='h',
+                marker_color='#6c757d'
+            ))
+            combo_chart.update_layout(
+                title='Top Item Combinations',
+                xaxis_title='Frequency',
+                yaxis_title='Item Combination',
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
+            charts['item_combinations'] = json.dumps(combo_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
     except Exception as e:
         print(f"Error creating menu analysis charts: {e}")
@@ -372,18 +450,18 @@ def create_revenue_analysis_charts(data):
             charts['daily_revenue'] = json.dumps(daily_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
         # Payment method analysis
-        if 'paymentMethodAnalysis' in data and 'ordersByPaymentMethod' in data['paymentMethodAnalysis']:
-            payment_data = data['paymentMethodAnalysis']['ordersByPaymentMethod']
+        if 'paymentMethods' in data and data['paymentMethods']:
+            payment_data = data['paymentMethods']
             methods = list(payment_data.keys())
-            counts = list(payment_data.values())
+            revenues = list(payment_data.values())
             
             payment_chart = go.Figure(data=go.Pie(
                 labels=methods,
-                values=counts,
+                values=revenues,
                 marker_colors=['#4a90e2', '#6c757d', '#e9ecef', '#dee2e6']
             ))
             payment_chart.update_layout(
-                title='Orders by Payment Method',
+                title='Revenue by Payment Method',
                 height=400,
                 plot_bgcolor='white',
                 paper_bgcolor='white'
@@ -393,8 +471,8 @@ def create_revenue_analysis_charts(data):
         # Outlet revenue comparison
         if 'outletRevenue' in data and data['outletRevenue']:
             outlet_data = data['outletRevenue']
-            outlets = list(outlet_data.keys())
-            revenues = [outlet_data[outlet]['revenue'] for outlet in outlets]
+            outlets = [outlet['outletName'] for outlet in outlet_data]
+            revenues = [outlet['revenue'] for outlet in outlet_data]
             
             outlet_chart = go.Figure(data=go.Bar(
                 x=outlets,
@@ -410,6 +488,34 @@ def create_revenue_analysis_charts(data):
                 paper_bgcolor='white'
             )
             charts['outlet_revenue'] = json.dumps(outlet_chart, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        # Revenue growth chart (if growth rate is available)
+        if 'revenueSummary' in data and data['revenueSummary'].get('revenueGrowthRate') != 'N/A':
+            growth_rate = data['revenueSummary']['revenueGrowthRate']
+            
+            growth_chart = go.Figure(data=go.Indicator(
+                mode = "gauge+number+delta",
+                value = growth_rate,
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': "Revenue Growth Rate (%)"},
+                delta = {'reference': 0},
+                gauge = {
+                    'axis': {'range': [None, 50]},
+                    'bar': {'color': "#4a90e2"},
+                    'steps': [
+                        {'range': [0, 25], 'color': "#f8f9fa"},
+                        {'range': [25, 50], 'color': "#e9ecef"}],
+                    'threshold': {
+                        'line': {'color': "#6c757d", 'width': 4},
+                        'thickness': 0.75,
+                        'value': 30}}
+            ))
+            growth_chart.update_layout(
+                height=400,
+                plot_bgcolor='white',
+                paper_bgcolor='white'
+            )
+            charts['revenue_growth'] = json.dumps(growth_chart, cls=plotly.utils.PlotlyJSONEncoder)
         
     except Exception as e:
         print(f"Error creating revenue analysis charts: {e}")

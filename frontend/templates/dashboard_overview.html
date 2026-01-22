@@ -277,16 +277,38 @@ function loadOverviewData() {
     // Show loading states
     showLoadingStates();
     
-    // Load all analytics data with filters
+    // Load all analytics data with filters - handle each request individually
+    const fetchWithFallback = async (url) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching ${url}:`, error);
+            return { error: error.message };
+        }
+    };
+    
     Promise.all([
-        fetch(`/api/analytics/peak-dining?${params.toString()}`).then(r => r.json()),
-        fetch(`/api/analytics/customer-demographics?${params.toString()}`).then(r => r.json()),
-        fetch(`/api/analytics/revenue-analysis?${params.toString()}`).then(r => r.json()),
-        fetch(`/api/analytics/menu-analysis?${params.toString()}`).then(r => r.json()),
-        fetch(`/api/analytics/branch-performance?${params.toString()}`).then(r => r.json()),
-        fetch(`/api/analytics/anomaly-detection?${params.toString()}`).then(r => r.json())
+        fetchWithFallback(`/api/analytics/peak-dining?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/customer-demographics?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/revenue-analysis?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/menu-analysis?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/branch-performance?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/anomaly-detection?${params.toString()}`)
     ])
     .then(([peakData, customerData, revenueData, menuData, branchData, anomalyData]) => {
+        console.log('Data loaded successfully:', {
+            peak: !!peakData && !peakData.error,
+            customer: !!customerData && !customerData.error,
+            revenue: !!revenueData && !revenueData.error,
+            menu: !!menuData && !menuData.error,
+            branch: !!branchData && !branchData.error,
+            anomaly: !!anomalyData && !anomalyData.error
+        });
+        
         updateMetrics(revenueData);
         createOverviewCharts(peakData, customerData, revenueData, menuData);
         updateBranchTable(branchData);
@@ -335,22 +357,30 @@ function hideLoadingStates() {
 }
 
 function updateMetrics(revenueData) {
-    if (revenueData && revenueData.revenueSummary) {
+    if (revenueData && revenueData.revenueSummary && !revenueData.error) {
         const summary = revenueData.revenueSummary;
         document.getElementById('totalOrders').textContent = summary.totalOrders.toLocaleString();
         document.getElementById('totalRevenue').textContent = 'LKR ' + summary.totalRevenue.toLocaleString();
         document.getElementById('avgOrderValue').textContent = 'LKR ' + summary.averageOrderValue.toFixed(2);
     } else {
         // Show error state for metrics
-        document.getElementById('totalOrders').textContent = 'Error';
-        document.getElementById('totalRevenue').textContent = 'Error';
-        document.getElementById('avgOrderValue').textContent = 'Error';
+        console.error('Revenue data error:', revenueData?.error || 'No revenue data');
+        document.getElementById('totalOrders').textContent = 'N/A';
+        document.getElementById('totalRevenue').textContent = 'N/A';
+        document.getElementById('avgOrderValue').textContent = 'N/A';
     }
 }
 
 function createOverviewCharts(peakData, customerData, revenueData, menuData) {
+    console.log('Creating charts with data:', {
+        peakData: peakData,
+        customerData: customerData,
+        revenueData: revenueData,
+        menuData: menuData
+    });
+    
     // Peak Dining Chart - using minimal blue/gray colors
-    if (peakData && peakData.dailyPatterns) {
+    if (peakData && peakData.dailyPatterns && !peakData.error && Object.keys(peakData.dailyPatterns).length > 0) {
         const days = Object.keys(peakData.dailyPatterns);
         const counts = Object.values(peakData.dailyPatterns);
         
@@ -385,10 +415,13 @@ function createOverviewCharts(peakData, customerData, revenueData, menuData) {
         };
         
         Plotly.newPlot('peakDiningChart', peakChart.data, peakChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Peak data error:', peakData?.error || 'No peak data');
+        document.getElementById('peakDiningChart').innerHTML = '<div class="alert alert-warning">Peak dining data unavailable</div>';
     }
     
     // Customer Demographics Chart - using minimal colors
-    if (customerData && customerData.ageDistribution) {
+    if (customerData && customerData.ageDistribution && !customerData.error && Object.keys(customerData.ageDistribution).length > 0) {
         const labels = Object.keys(customerData.ageDistribution);
         const values = Object.values(customerData.ageDistribution);
         
@@ -418,10 +451,13 @@ function createOverviewCharts(peakData, customerData, revenueData, menuData) {
         };
         
         Plotly.newPlot('customerDemographicsChart', customerChart.data, customerChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Customer data error:', customerData?.error || 'No customer data');
+        document.getElementById('customerDemographicsChart').innerHTML = '<div class="alert alert-warning">Customer demographics data unavailable</div>';
     }
     
     // Revenue Chart - using minimal colors
-    if (revenueData && revenueData.dailyRevenue) {
+    if (revenueData && revenueData.dailyRevenue && !revenueData.error && Object.keys(revenueData.dailyRevenue).length > 0) {
         const dates = Object.keys(revenueData.dailyRevenue).sort();
         const revenues = dates.map(date => revenueData.dailyRevenue[date]);
         
@@ -461,10 +497,13 @@ function createOverviewCharts(peakData, customerData, revenueData, menuData) {
         };
         
         Plotly.newPlot('revenueChart', revenueChart.data, revenueChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Revenue data error:', revenueData?.error || 'No revenue data');
+        document.getElementById('revenueChart').innerHTML = '<div class="alert alert-warning">Revenue data unavailable</div>';
     }
     
     // Menu Chart - using minimal colors
-    if (menuData && menuData.popularItems && menuData.popularItems.length > 0) {
+    if (menuData && menuData.popularItems && Array.isArray(menuData.popularItems) && menuData.popularItems.length > 0 && !menuData.error) {
         const items = menuData.popularItems.slice(0, 5);
         const itemNames = items.map(item => item.itemName);
         const orderCounts = items.map(item => item.orderCount);
@@ -497,13 +536,16 @@ function createOverviewCharts(peakData, customerData, revenueData, menuData) {
         };
         
         Plotly.newPlot('menuChart', menuChart.data, menuChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Menu data error:', menuData?.error || 'No menu data');
+        document.getElementById('menuChart').innerHTML = '<div class="alert alert-warning">Menu data unavailable</div>';
     }
 }
 
 function updateBranchTable(branchData) {
     const tbody = document.querySelector('#branchPerformanceTable tbody');
     
-    if (branchData && branchData.branchRankings && branchData.branchRankings.length > 0) {
+    if (branchData && branchData.branchRankings && branchData.branchRankings.length > 0 && !branchData.error) {
         const maxRevenue = Math.max(...branchData.branchRankings.map(branch => branch.revenue));
         
         tbody.innerHTML = branchData.branchRankings.map((branch, index) => {
@@ -528,11 +570,12 @@ function updateBranchTable(branchData) {
             `;
         }).join('');
     } else {
+        console.error('Branch data error:', branchData?.error || 'No branch data');
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="text-center text-muted">
                     <i class="fas fa-info-circle me-2"></i>
-                    No branch performance data available
+                    ${branchData?.error ? 'Error loading branch data: ' + branchData.error : 'No branch performance data available'}
                 </td>
             </tr>
         `;
@@ -542,7 +585,7 @@ function updateBranchTable(branchData) {
 function updateAlerts(anomalyData) {
     const alertsContainer = document.getElementById('alertsContainer');
     
-    if (anomalyData && anomalyData.alertLogs && anomalyData.alertLogs.length > 0) {
+    if (anomalyData && anomalyData.alertLogs && anomalyData.alertLogs.length > 0 && !anomalyData.error) {
         alertsContainer.innerHTML = anomalyData.alertLogs.slice(0, 3).map(alert => `
             <div class="alert alert-${alert.severity === 'HIGH' ? 'danger' : alert.severity === 'MEDIUM' ? 'warning' : 'info'} alert-dismissible">
                 <strong>${alert.type}:</strong> ${alert.message}
@@ -550,7 +593,11 @@ function updateAlerts(anomalyData) {
             </div>
         `).join('');
     } else {
-        alertsContainer.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>No recent alerts. All systems operating normally.</div>';
+        console.error('Anomaly data error:', anomalyData?.error || 'No anomaly data');
+        const message = anomalyData?.error ? 
+            `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Error loading alerts: ${anomalyData.error}</div>` :
+            '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>No recent alerts. All systems operating normally.</div>';
+        alertsContainer.innerHTML = message;
     }
 }
 

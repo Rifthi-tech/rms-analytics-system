@@ -68,22 +68,62 @@ class RestaurantDataProcessor:
         if df_filtered.empty:
             return {'error': 'No data available for selected filters'}
         
-        # Daily patterns
-        daily_patterns = df_filtered.groupby('day_of_week').size().to_dict()
-        
-        # Hourly patterns
-        hourly_patterns = df_filtered.groupby('hour').size().to_dict()
-        
-        # Peak hours by outlet
-        peak_by_outlet = df_filtered.groupby(['name_y', 'hour']).size().reset_index(name='order_count')
-        peak_by_outlet = peak_by_outlet.loc[peak_by_outlet.groupby('name_y')['order_count'].idxmax()]
-        
-        return {
-            'dailyPatterns': daily_patterns,
-            'hourlyPatterns': hourly_patterns,
-            'peakByOutlet': peak_by_outlet.to_dict('records'),
-            'totalOrders': len(df_filtered)
-        }
+        try:
+            # Daily patterns
+            daily_patterns = df_filtered.groupby('day_of_week').size().to_dict()
+            
+            # Hourly patterns
+            hourly_patterns = df_filtered.groupby('hour').size().to_dict()
+            
+            # Hourly heatmap data by outlet
+            hourly_heatmap = {}
+            for outlet in df_filtered['name_y'].unique():
+                outlet_data = df_filtered[df_filtered['name_y'] == outlet]
+                hourly_counts = outlet_data.groupby('hour').size()
+                hourly_heatmap[outlet] = {str(hour): int(count) for hour, count in hourly_counts.items()}
+            
+            # Peak hours table
+            peak_hours_data = df_filtered.groupby('hour').size().reset_index(name='orderCount')
+            peak_hours_data = peak_hours_data.sort_values('orderCount', ascending=False).head(10)
+            
+            peak_hour_tables = {
+                'overallPeakHours': []
+            }
+            
+            for _, row in peak_hours_data.iterrows():
+                hour = int(row['hour'])
+                count = int(row['orderCount'])
+                time_range = f"{hour:02d}:00 - {(hour+1):02d}:00"
+                peak_hour_tables['overallPeakHours'].append({
+                    'hour': hour,
+                    'orderCount': count,
+                    'timeRange': time_range
+                })
+            
+            # Branch-level summaries
+            branch_summaries = {}
+            for outlet in df_filtered['name_y'].unique():
+                outlet_data = df_filtered[df_filtered['name_y'] == outlet]
+                branch_summaries[outlet] = {
+                    'totalOrders': len(outlet_data),
+                    'totalRevenue': float(outlet_data['total_price_lkr'].sum()),
+                    'uniqueCustomers': int(outlet_data['customer_id'].nunique()),
+                    'avgOrderValue': float(outlet_data['total_price_lkr'].sum() / len(outlet_data)) if len(outlet_data) > 0 else 0,
+                    'peakHour': int(outlet_data.groupby('hour').size().idxmax()) if len(outlet_data) > 0 else 0
+                }
+            
+            return {
+                'dailyPatterns': daily_patterns,
+                'hourlyPatterns': hourly_patterns,
+                'hourlyHeatmap': hourly_heatmap,
+                'peakHourTables': peak_hour_tables,
+                'branchSummaries': branch_summaries,
+                'totalOrders': len(df_filtered)
+            }
+            
+        except Exception as e:
+            print(f"Error in peak dining analysis: {e}")
+            return {'error': f'Error processing peak dining data: {str(e)}'}
     
     def get_customer_demographics(self, outlet_id=None, season=None, festival=None):
         """Analyze customer demographics"""
@@ -112,10 +152,25 @@ class RestaurantDataProcessor:
         loyalty_distribution = customers['loyalty_group'].value_counts().to_dict()
         loyalty_distribution = {str(k): int(v) for k, v in loyalty_distribution.items()}
         
+        # Loyalty segmentation analysis
+        loyalty_segmentation = {}
+        for group in customers['loyalty_group'].unique():
+            if pd.isna(group):  # Skip NaN values
+                continue
+            group_customers = customers[customers['loyalty_group'] == group]
+            if len(group_customers) > 0:  # Only include groups with customers
+                loyalty_segmentation[str(group)] = {
+                    'count': len(group_customers),
+                    'avgAge': float(group_customers['age'].mean()) if not group_customers['age'].isna().all() else 0,
+                    'avgSpent': float(group_customers['estimated_total_spent_lkr'].mean()) if not group_customers['estimated_total_spent_lkr'].isna().all() else 0,
+                    'genderDistribution': {str(k): int(v) for k, v in group_customers['gender'].value_counts().to_dict().items()}
+                }
+        
         return {
             'ageDistribution': age_distribution,
             'genderDistribution': gender_distribution,
             'loyaltyDistribution': loyalty_distribution,
+            'loyaltySegmentation': loyalty_segmentation,
             'totalCustomers': len(customers)
         }
     
@@ -230,11 +285,34 @@ class RestaurantDataProcessor:
             veg_analysis = df_filtered['is_vegetarian'].value_counts().to_dict()
             veg_analysis = {str(k): int(v) for k, v in veg_analysis.items()}
             
+            # Item combinations analysis (top item pairs in same orders)
+            item_combinations = []
+            order_items = df_filtered.groupby('order_id')['name'].apply(list).reset_index()
+            combination_counts = {}
+            
+            for _, row in order_items.iterrows():
+                items = row['name']
+                if len(items) > 1:
+                    for i in range(len(items)):
+                        for j in range(i+1, len(items)):
+                            combo = tuple(sorted([items[i], items[j]]))
+                            combination_counts[combo] = combination_counts.get(combo, 0) + 1
+            
+            # Get top 5 combinations
+            top_combinations = sorted(combination_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+            for combo, count in top_combinations:
+                item_combinations.append({
+                    'item1': combo[0],
+                    'item2': combo[1],
+                    'frequency': count
+                })
+            
             return {
                 'popularItems': popular_items_records,
                 'categoryAnalysis': category_analysis.to_dict('records'),
                 'spicePreferences': spice_preferences,
-                'vegetarianAnalysis': veg_analysis
+                'vegetarianAnalysis': veg_analysis,
+                'itemCombinations': item_combinations
             }
             
         except Exception as e:
